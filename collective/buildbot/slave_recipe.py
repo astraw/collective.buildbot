@@ -7,14 +7,10 @@ import shutil
 from os.path import join
 import zc.buildout
 import zc.recipe.egg
+from collective.buildbot.recipe import BaseRecipe
 import virtualenv
 
-recipe_dir = os.path.realpath(os.path.dirname(__file__))
-
-def _log(msg):
-    print msg
-
-class Recipe(object):
+class Recipe(BaseRecipe):
     """zc.buildout recipe"""
 
     def __init__(self, buildout, name, options):
@@ -26,25 +22,6 @@ class Recipe(object):
         options['location'] = join(parts_dir, self.name)
         _, self.ws = eggs.working_set()
 
-    def create_virtualenv(self, location):
-        old = sys.argv
-        try:
-            sys.argv = ['iw_buildbot', '--no-site-packages', location]
-            from virtualenv import main
-            main()
-        finally:
-            sys.argv = old
-
-        is_posix = sys.platform != 'win32'
-        executable = is_posix and 'python' or 'python.exe'
-        if not os.path.isfile(join(location, 'bin', executable)):
-            pythons = glob.glob(join(location, 'bin', 'python*'))
-            shutil.copyfile(pythons[0],
-                            join(location, 'bin', executable))
-
-            if is_posix:
-                os.chmod(join(location, 'bin', executable), 0755)
-
     def install(self):
         """Installer"""
         # will just create a slave in part, with the right
@@ -55,21 +32,21 @@ class Recipe(object):
             os.mkdir(location)
 
         self.create_virtualenv(location)
-        data = dict([(key.replace('-', '_'), value) 
-                     for key, value in self.options.items()]) 
+        data = dict([(key.replace('-', '_'), value)
+                     for key, value in self.options.items()])
         data['base_dir'] = location
         data['slave_name'] = self.name
 
-        template = open(join(recipe_dir, 'slave.tac_tmpl')).read()
-        template = template % data 
+        template = open(join(self.recipe_dir, 'slave.tac_tmpl')).read()
+        template = template % data
         filename = join(location, 'buildbot.tac')
         open(filename, 'w').write(template)
-        _log('Generated script %s.' % filename) 
-        
+        self.log('Generated script %s.' % filename)
+
         # add the buildbot script
-        bin_dir = self.options['bin-directory'] 
+        bin_dir = self.options['bin-directory']
         paths = ["'%s'" % d.location for d in self.ws]
-        template = open(join(recipe_dir, 'slave.py_tmpl')).read()
+        template = open(join(self.recipe_dir, 'slave.py_tmpl')).read()
         template = template % {'python': sys.executable,
                                'paths': ',\n'.join(paths),
                                'slave_dir': location}
@@ -77,9 +54,8 @@ class Recipe(object):
         script = join(bin_dir, '%s.py' % self.name)
         open(script, 'w').write(template)
         os.chmod(script, 0700)
-        _log('Generated script %s.' % script)
+        self.log('Generated script %s.' % script)
         return (filename, script)
-        
-    def update(self):
-        """Updater"""
-        pass
+
+    update = install
+

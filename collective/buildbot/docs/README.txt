@@ -55,7 +55,7 @@ We'll start by creating a buildout that uses the recipe::
     >>> write('buildout.cfg',
     ... """
     ... [buildout]
-    ... parts = buildmaster
+    ... parts = buildmaster one two
     ... 
     ... [buildmaster]
     ... recipe = collective.buildbot:master
@@ -67,11 +67,9 @@ We'll start by creating a buildout that uses the recipe::
     ... slaves = 
     ...     slave1 password
     ...     slave2 password
-    ... projects = 
-    ...     one
-    ...     two
     ...
     ... [one]
+    ... recipe = collective.buildbot:project
     ... slave-names = slave1
     ... email-notification-sender = foo@bar.com
     ... email-notification-recipient =
@@ -82,6 +80,7 @@ We'll start by creating a buildout that uses the recipe::
     ... branch = trunk
     ...
     ... [two]
+    ... recipe = collective.buildbot:project
     ... slave-names = slave2
     ... email-notification-sender = foobar@barfoo.com
     ... email-notification-recipient = barfoo@foobar.com
@@ -97,13 +96,15 @@ Running the buildout gives us::
 
     >>> print system(buildout)
     Installing buildmaster.
-    ...
+    New python executable in /sample-buildout/parts/buildmaster/bin/python
+    Installing setuptools.............done.
     Generated script /sample-buildout/parts/buildmaster/buildbot.tac.
     Generated script /sample-buildout/parts/buildmaster/buildbot.cfg.
-    Generated script /sample-buildout/parts/buildmaster/projects/one.cfg.
-    Generated script /sample-buildout/parts/buildmaster/projects/two.cfg.
     Generated script /sample-buildout/bin/buildmaster.py.
-    <BLANKLINE>
+    Installing one.
+    Generated script /sample-buildout/parts/projects/one.cfg.
+    Installing two.
+    Generated script /sample-buildout/parts/projects/two.cfg.
 
 As shown above, the buildout generated the required configuration files.
 TODO: Add proper documentation!
@@ -137,7 +138,7 @@ A buildout config file::
     project-name=The project
     project-url=http://example.com
     buildbot-url=http://example.com/buildbot
-    projects-directory = /sample-buildout/parts/buildmaster/projects 
+    projects-directory = /sample-buildout/parts/projects 
     <BLANKLINE>
     [slaves]
     slave1=password
@@ -146,7 +147,7 @@ A buildout config file::
 
 A project config::
 
-    >>> cat(join('parts', 'buildmaster', 'projects', 'one.cfg'))
+    >>> cat(join('parts', 'projects', 'one.cfg'))
     [one]
     base-url=http://example.com
     branch=trunk
@@ -168,7 +169,7 @@ A project config::
 
 Another one::
 
-    >>> cat(join('parts', 'buildmaster', 'projects', 'two.cfg'))
+    >>> cat(join('parts', 'projects', 'two.cfg'))
     [two]
     base-url=http://example.com
     branch=trunk
@@ -190,7 +191,7 @@ Another one::
     >>> write('buildout.cfg',
     ... """
     ... [buildout]
-    ... parts = buildmaster-poller
+    ... parts = buildmaster-poller one two
     ... 
     ... [buildmaster-poller]
     ... recipe = collective.buildbot:master
@@ -202,11 +203,9 @@ Another one::
     ... slaves = 
     ...     slave1 password
     ...     slave2 password
-    ... projects = 
-    ...     one
-    ...     two
     ...
     ... [one]
+    ... recipe = collective.buildbot:project
     ... slave-names = slave1
     ... email-notification-sender = foo@bar.com
     ... email-notification-recipient =
@@ -218,6 +217,7 @@ Another one::
     ... poller = svnpoller
     ...
     ... [two]
+    ... recipe = collective.buildbot:project
     ... slave-names = slave2
     ... email-notification-sender = foobar@barfoo.com
     ... email-notification-recipient = barfoo@foobar.com
@@ -240,19 +240,23 @@ Another one::
     ... """)
 
     >>> print system(buildout)
+    Uninstalling two.
+    Uninstalling one.
     Uninstalling buildmaster.
     Installing buildmaster-poller.
-    ...
+    New python executable in /sample-buildout/parts/buildmaster-poller/bin/python
+    Installing setuptools.............done.
     Generated script /sample-buildout/parts/buildmaster-poller/buildbot.tac.
     Generated script /sample-buildout/parts/buildmaster-poller/buildbot.cfg.
-    Generated script /sample-buildout/parts/buildmaster-poller/projects/one.cfg.
-    Generated script /sample-buildout/parts/buildmaster-poller/projects/two.cfg.
     Generated script /sample-buildout/bin/buildmaster-poller.py.
-    <BLANKLINE>
+    Installing one.
+    Generated script /sample-buildout/parts/projects/one.cfg.
+    Installing two.
+    Generated script /sample-buildout/parts/projects/two.cfg.
 
 Poller generation::
 
-    >>> cat(join('parts', 'buildmaster-poller', 'projects', 'one.cfg'))
+    >>> cat(join('parts', 'projects', 'one.cfg'))
     [one]
     base-url=http://example.com
     branch=trunk
@@ -318,6 +322,8 @@ We'll start by creating a buildout that uses the recipe::
 Running the buildout gives us::
 
     >>> print system(buildout)
+    Uninstalling two.
+    Uninstalling one.
     Uninstalling buildmaster-poller.
     Installing buildslave.
     ...
