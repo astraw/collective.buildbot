@@ -95,7 +95,7 @@ We'll start by creating a buildout that uses the recipe::
 Running the buildout gives us::
 
     >>> print system(buildout)
-    Installing buildmaster.
+    Installing buildmaster...
     New python executable in /sample-buildout/parts/buildmaster/bin/python
     Installing setuptools.............done.
     Generated script /sample-buildout/parts/buildmaster/buildbot.tac.
@@ -243,7 +243,7 @@ Another one::
     Uninstalling two.
     Uninstalling one.
     Uninstalling buildmaster.
-    Installing buildmaster-poller.
+    Installing buildmaster-poller...
     New python executable in /sample-buildout/parts/buildmaster-poller/bin/python
     Installing setuptools.............done.
     Generated script /sample-buildout/parts/buildmaster-poller/buildbot.tac.
