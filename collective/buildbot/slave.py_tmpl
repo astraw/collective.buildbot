@@ -1,0 +1,20 @@
+#!%(python)s
+
+import sys
+import os
+
+sys.path[0:0] = [
+  %(paths)s
+]
+
+import buildbot.scripts.runner
+
+if __name__ == '__main__':
+    if len(sys.argv) > 1 and sys.argv[1] in ('stop', 'start', 'restart', 
+                                             'reconfig', 'sighup', 
+                                             'sendchange'):
+        # automatically include the path to buildbot.tac
+        cmd = sys.argv[-1]
+        sys.argv = [sys.argv[0], cmd, '%(slave_dir)s']
+    buildbot.scripts.runner.run()
+    

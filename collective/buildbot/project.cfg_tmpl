@@ -1,0 +1,11 @@
+[$name]
+#for $o in $project
+${o.key}=${o.value}
+#end for
+
+#if $poller
+[poller]
+#for $o in $poller
+${o.key}=${o.value}
+#end for
+#end if
