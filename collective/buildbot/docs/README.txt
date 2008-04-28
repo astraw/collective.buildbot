@@ -100,7 +100,7 @@ Running the buildout gives us::
     Installing setuptools.............done.
     Generated script /sample-buildout/parts/buildmaster/buildbot.tac.
     Generated script /sample-buildout/parts/buildmaster/buildbot.cfg.
-    Generated script /sample-buildout/bin/buildmaster.py.
+    Generated script '/sample-buildout/bin/buildmaster'.
     Installing one.
     Generated script /sample-buildout/parts/projects/one.cfg.
     Installing two.
@@ -248,7 +248,7 @@ Another one::
     Installing setuptools.............done.
     Generated script /sample-buildout/parts/buildmaster-poller/buildbot.tac.
     Generated script /sample-buildout/parts/buildmaster-poller/buildbot.cfg.
-    Generated script /sample-buildout/bin/buildmaster-poller.py.
+    Generated script '/sample-buildout/bin/buildmaster-poller'.
     Installing one.
     Generated script /sample-buildout/parts/projects/one.cfg.
     Installing two.
@@ -328,6 +328,6 @@ Running the buildout gives us::
     Installing buildslave.
     ...
     Generated script /sample-buildout/parts/buildslave/buildbot.tac.
-    Generated script /sample-buildout/bin/buildslave.py.
+    Generated script '/sample-buildout/bin/buildslave'.
     <BLANKLINE>
 

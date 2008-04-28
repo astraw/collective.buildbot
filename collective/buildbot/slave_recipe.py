@@ -13,21 +13,12 @@ import virtualenv
 class Recipe(BaseRecipe):
     """zc.buildout recipe"""
 
-    def __init__(self, buildout, name, options):
-        self.buildout, self.name, self.options = buildout, name, options
-        eggs = zc.recipe.egg.Eggs(buildout, 'eggs', dict(eggs='collective.buildbot'))
-        options['bin-directory'] = buildout['buildout']['bin-directory']
-        options['scripts'] = '' # suppress script generation.
-        parts_dir = buildout['buildout']['parts-directory']
-        options['location'] = join(parts_dir, self.name)
-        _, self.ws = eggs.working_set()
-
     def install(self):
         """Installer"""
         # will just create a slave in part, with the right
         # elements, and a start script
         # add the buildbot script
-        location = self.options['location']
+        location = self.location
         if not os.path.exists(location):
             os.mkdir(location)
 
@@ -43,19 +34,14 @@ class Recipe(BaseRecipe):
         open(filename, 'w').write(template)
         self.log('Generated script %s.' % filename)
 
-        # add the buildbot script
-        bin_dir = self.options['bin-directory']
-        paths = ["'%s'" % d.location for d in self.ws]
-        template = open(join(self.recipe_dir, 'slave.py_tmpl')).read()
-        template = template % {'python': sys.executable,
-                               'paths': ',\n'.join(paths),
-                               'slave_dir': location}
+        buildbot_cfg = join(location, 'buildbot.tac')
+        options = {'eggs':'collective.buildbot',
+                   'entry-points': '%s=collective.buildbot.scripts:main' % self.name,
+                   'arguments': 'location=%r, config_file=%r' % (self.location, '')
+                  }
+        script = zc.recipe.egg.Egg(self.buildout, self.name, options)
 
-        script = join(bin_dir, '%s.py' % self.name)
-        open(script, 'w').write(template)
-        os.chmod(script, 0700)
-        self.log('Generated script %s.' % script)
-        return (filename, script)
+        return list(script.install()) + [filename]
 
     update = install
 

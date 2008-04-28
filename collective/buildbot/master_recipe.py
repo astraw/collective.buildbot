@@ -61,22 +61,14 @@ class Recipe(BaseRecipe):
         self.log('Generated script %s.' % buildbot_cfg)
         files.append(buildbot_cfg)
 
-        # generates the buildbot script
-        bin_dir = self.buildout['buildout']['bin-directory']
-        paths = ["'%s'" % d.location for d in self.ws]
-        template = open(join(self.recipe_dir, 'buildbot.py_tmpl')).read()
-        template = template % {'python': sys.executable,
-                               'paths': ',\n'.join(paths),
-                               'config_file': buildbot_cfg,
-                               'builbot_dir': location}
+        options = {'eggs':'collective.buildbot',
+                   'entry-points': '%s=collective.buildbot.scripts:main' % self.name,
+                   'arguments': 'location=%r, config_file=%r' % (self.location, buildbot_cfg)
+                  }
+        script = zc.recipe.egg.Egg(self.buildout, self.name, options)
+        files.extend(list(script.install()))
 
-        script_name = join(bin_dir, '%s.py' % self.name)
-        open(script_name, 'w').write(template)
-        os.chmod(script_name, 0700)
-        self.log('Generated script %s.' % script_name)
-        files.append(script_name)
-
-        return tuple()
+        return files
 
 
     update = install
