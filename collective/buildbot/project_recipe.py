@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
+import urlparse
 from os.path import join
 from Cheetah.Template import Template as CheetahTemplate
 from collective.buildbot.recipe import BaseRecipe
 
-class Recipe(BaseRecipe):
+class Project(BaseRecipe):
 
     def install(self):
         """generates .cfg files"""
@@ -15,7 +16,6 @@ class Recipe(BaseRecipe):
                    if cmd.strip() != '']
             return '\n' + '    \n'.join(['    %s' % cmd for cmd in cmds])
         project = self.name
-        self.buildout[project]['name'] = project
         template = open(join(self.recipe_dir, 'project.cfg_tmpl')).read()
         search_list = {}
         globs = {}
@@ -31,7 +31,7 @@ class Recipe(BaseRecipe):
                 search_list[key] = normalyse_option(value)
 
         # project values
-        for key, value in self.buildout[project].items():
+        for key, value in self.options.items():
             search_list[key] = normalyse_option(value)
 
         for f, v in (('vcs', 'svn'),
@@ -82,4 +82,24 @@ class Recipe(BaseRecipe):
         return tuple()
 
     update = install
+
+class Projects(BaseRecipe):
+
+    def install(self):
+        options = dict([(k,v) for k,v in self.options.items()])
+        projects = options.pop('projects')
+        projects = projects.split('\n')
+        projects = [p.strip() for p in projects if p.strip()]
+        base_url = options.pop('base-url')
+        if 'branch' in options:
+            branch = options.pop('branch')
+        else:
+            branch = 'trunk'
+        files = []
+        for project in projects:
+            options['base-url'] = urlparse.urljoin(
+                                    base_url, '%s/%s' % (project, branch))
+            p = Project(self.buildout, project, options)
+            files.extend(p.install())
+        return files
 

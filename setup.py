@@ -34,7 +34,8 @@ long_description = (
 entry_points = {"zc.buildout": [
                     "master = collective.buildbot.master_recipe:Recipe",
                     "slave = collective.buildbot.slave_recipe:Recipe",
-                    "project = collective.buildbot.project_recipe:Recipe",
+                    "project = collective.buildbot.project_recipe:Project",
+                    "projects = collective.buildbot.project_recipe:Projects",
                     ],
                 }
 
