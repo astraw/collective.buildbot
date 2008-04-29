@@ -18,10 +18,13 @@ long_description = (
     + '\n' +
     read('CHANGES.txt')
     + '\n' +
-    'Detailed Documentation\n'
-    '**********************\n'
-    + '\n' +
     read('collective', 'buildbot', 'README.txt')
+    + '\n' +
+    read('collective', 'buildbot', 'docs', 'master.txt')
+    + '\n' +
+    read('collective', 'buildbot', 'docs', 'slave.txt')
+    + '\n' +
+    read('collective', 'buildbot', 'docs', 'project.txt')
     + '\n' +
     'Contributors\n'
     '************\n'

@@ -1,0 +1,96 @@
+The master recipe
+*****************
+
+Supported options
+=================
+
+The recipe supports the following options:
+
+port
+    The port buildbot listens to. Called by slaves.
+
+wport
+    The web port buildbot use to display the fountain.
+
+project-name
+    Project name. Displayed in the web pages.
+
+project-url
+    Project url, used in the web pages.
+
+url
+    buildbot url.
+
+build-slaves
+    Lists the slaves, with the name and the password for each.
+
+Example usage
+=============
+
+We'll start by creating a buildout that uses the recipe::
+
+    >>> write('buildout.cfg',
+    ... """
+    ... [buildout]
+    ... parts = buildmaster
+    ... 
+    ... [buildmaster]
+    ... recipe = collective.buildbot:master
+    ... port = 8080
+    ... wport = 8082
+    ... project-name = The project
+    ... project-url = http://example.com
+    ... url = http://example.com/buildbot
+    ... slaves = 
+    ...     slave1 password
+    ...     slave2 password
+    ... """)
+
+Running the buildout gives us::
+
+    >>> print system(buildout)
+    Installing buildmaster...
+    New python executable in /sample-buildout/parts/buildmaster/bin/python
+    Installing setuptools.............done.
+    Generated script /sample-buildout/parts/buildmaster/buildbot.tac.
+    Generated script /sample-buildout/parts/buildmaster/buildbot.cfg.
+    Generated script '/sample-buildout/bin/buildmaster'.
+
+As shown above, the buildout generated the required configuration files.
+
+Twisted .tac file to launch buildbot::
+
+    >>> cat(join('parts', 'buildmaster', 'buildbot.tac'))
+    from twisted.application import service
+    from buildbot.master import BuildMaster
+    import os
+    import sys
+    import collective.buildbot
+    <BLANKLINE>
+    basedir = '/sample-buildout/parts/buildmaster'
+    buildbot = os.path.dirname(collective.buildbot.__file__)
+    <BLANKLINE>
+    configfile = os.path.join(buildbot, 'master.py')
+    application = service.Application('buildmaster')
+    <BLANKLINE>
+    master = BuildMaster(basedir, configfile)
+    master.setServiceParent(application)
+    <BLANKLINE>
+
+A buildout config file::
+
+    >>> cat(join('parts', 'buildmaster', 'buildbot.cfg'))
+    [buildbot]
+    port=8080
+    wport=8082
+    allow-force=false
+    project-name=The project
+    project-url=http://example.com
+    buildbot-url=http://example.com/buildbot
+    projects-directory = /sample-buildout/parts/projects 
+    <BLANKLINE>
+    [slaves]
+    slave1=password
+    slave2=password
+    <BLANKLINE>
+

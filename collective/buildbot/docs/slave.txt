@@ -1,0 +1,45 @@
+The slave recipe
+****************
+
+Supported options
+=================
+
+The recipe supports the following options:
+
+host
+    Host of the buildmaster.
+    
+port
+    Port on which the buildmaster listens.
+
+password
+    Sets the password for the buildbot.
+
+Example usage
+=============
+
+We'll start by creating a buildout that uses the recipe::
+
+    >>> write('buildout.cfg',
+    ... """
+    ... [buildout]
+    ... parts = 
+    ...	   buildslave
+    ... 
+    ... [buildslave]
+    ... recipe = collective.buildbot:slave
+    ... host = localhost
+    ... port = 8888
+    ... password = password
+    ... """)
+
+Running the buildout gives us::
+
+    >>> print system(buildout)
+    Installing buildslave.
+    ...
+    Generated script /sample-buildout/parts/buildslave/buildbot.tac.
+    Generated script '/sample-buildout/bin/buildslave'.
+    <BLANKLINE>
+
+

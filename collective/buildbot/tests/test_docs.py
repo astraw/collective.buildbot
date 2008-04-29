@@ -30,9 +30,14 @@ def setUp(test):
     zc.buildout.testing.install_develop('collective.buildbot', test)
 
 def test_suite():
-    suite = unittest.TestSuite((
+    test_files = [
+                  'master.txt',
+                  'slave.txt',
+                  'project.txt',
+                 ]
+    suite = unittest.TestSuite([
             doctest.DocFileSuite(
-                join('..', 'docs', 'README.txt'),
+                join('..', 'docs', filename),
                 setUp=setUp,
                 tearDown=zc.buildout.testing.buildoutTearDown,
                 optionflags=optionflags,
@@ -45,8 +50,8 @@ def test_suite():
                         # (re.compile('my-[rR]eg[eE]ps'), 'my-regexps')
                         zc.buildout.testing.normalize_path,
                         ]),
-                ),
-            ))
+                )
+            for filename in test_files])
     return suite
 
 if __name__ == '__main__':

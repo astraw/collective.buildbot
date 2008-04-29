@@ -76,9 +76,13 @@ class Project(BaseRecipe):
                                    searchList=[globs])
 
         target = join(self.projects_directory, '%s.cfg' % project)
+
+        if not os.path.isdir(self.projects_directory):
+            os.mkdir(self.projects_directory)
+
         open(target, 'w').write(str(template))
         files.append(target)
-        self.log('Generated script %s.' % target)
+        self.log('Generated project config %r.' % target)
         return tuple()
 
     update = install
