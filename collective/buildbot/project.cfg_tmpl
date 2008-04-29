@@ -1,4 +1,4 @@
-[$name]
+[project]
 #for $o in $project
 ${o.key}=${o.value}
 #end for

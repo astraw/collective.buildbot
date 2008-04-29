@@ -89,7 +89,7 @@ Running the buildout gives us::
 This will generate a config file for each project::
 
     >>> cat(join('parts', 'projects', 'one.cfg'))
-    [one]
+    [project]
     base-url=http://example.com/svn/my.package/trunk
     branch=
     build-sequence=
@@ -100,6 +100,7 @@ This will generate a config file for each project::
         buildbot@foo.com
     email-notification-sender=foo@bar.com
     mail-host=localhost
+    name=one
     repository=
     slave-names=slave1
     test-sequence=
@@ -107,7 +108,7 @@ This will generate a config file for each project::
     vcs=svn
 
     >>> cat(join('parts', 'projects', 'two.cfg'))
-    [two]
+    [project]
     base-url=http://example.com
     branch=trunk
     build-sequence=
@@ -116,6 +117,7 @@ This will generate a config file for each project::
     email-notification-recipient=barfoo@foobar.com
     email-notification-sender=foobar@barfoo.com
     mail-host=localhost
+    name=two
     repository=svn/buildout
     slave-names=slave2
     test-sequence=
@@ -179,7 +181,7 @@ We can define a poller to make our buildbot aware of commits::
 Poller generation::
 
     >>> cat(join('parts', 'projects', 'one.cfg'))
-    [one]
+    [project]
     base-url=http://example.com
     branch=trunk
     build-sequence=
@@ -190,6 +192,7 @@ Poller generation::
         buildbot@foo.com
     email-notification-sender=foo@bar.com
     mail-host=localhost
+    name=one
     repository=svn/my.package
     slave-names=slave1
     test-sequence=

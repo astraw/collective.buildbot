@@ -45,17 +45,13 @@ for projectcfg in files:
     pconf = ConfigParser()
     pconf.read(projectcfg)
 
-    kwargs = {}
-    for section in pconf.sections():
-        if section == 'poller':
-            kwargs['poller'] = dict([(key.replace('-', '_'), value)
-                                     for key, value
-                                     in pconf.items(section)])
-        else:
-            kwargs.update(dict([(key.replace('-', '_'), value)
-                                for key, value
-                                in pconf.items(section)]))
-    kwargs['name'] = section
+    kwargs = dict([(key.replace('-', '_'), value)
+                        for key, value
+                        in pconf.items('project')])
+    if 'poller' in pconf.sections():
+        kwargs['poller'] = dict([(key.replace('-', '_'), value)
+                                 for key, value
+                                 in pconf.items('poller')])
     Project(**kwargs)(c)
 
 

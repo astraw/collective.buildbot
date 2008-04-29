@@ -59,31 +59,25 @@ class Project(object):
         ['gael@ingeniweb.com', 'buildout@ingeniweb.com']
     """
 
-    def __init__(self, slave_names='', name='', base_url='', repository='',
-                 branch='trunk', test_sequence=None, build_sequence=None,
-                 period='24', email_notification_sender='',
-                 email_notification_recipients='', mail_host='localhost',
-                 vcs='svn', poller=None, poller_url='', **kwargs):
-        self.slave_names =  [n.strip() for n in slave_names.split()]
-        self.mail_host = mail_host
-        self.email_notification_sender = email_notification_sender.strip()
-        self.email_notification_recipients = [e.strip() for e in email_notification_recipients.split()]
-        self.vcs = vcs
-        self.poller = poller
-        self.poller_url = poller_url
+    def __init__(self, **options):
+        self.name = options.get('name')
 
-        if test_sequence is not None:
-            self.test_sequence = test_sequence
-        else:
-            self.test_sequence = join('bin', 'test')
+        self.mail_host = options.get('mail_host', 'localhost')
+        self.email_notification_sender = options.get('email_notification_sender','').strip()
+        self.email_notification_recipients = split_option(options, 'email_notification_recipients')
 
-        if build_sequence is not None:
-            self.build_sequence = build_sequence
-        else:
-            self.build_sequence = [join(self.executable(), 'bootstrap.py'),
-                                   join('bin', 'buildout')]
+        self.slave_names =  split_option(options, 'slave_names')
+        self.vcs = options.get('vcs', 'svn')
+        self.poller = options.get('poller', {})
+        self.poller_url = options.get('poller_url', '')
 
-        self.name = name
+        self.test_sequence = options.gets('test_sequence', join('bin', 'test'))
+
+        self.build_sequence = options.get('build_sequence',
+                                          [join(self.executable(), 'bootstrap.py'),
+                                          join('bin', 'buildout')])
+        base_url = options.get('base_url')
+        repository = options.get('repository', '')
         if repository:
             self.baseURL = base_url
             self.repository = repository
@@ -92,10 +86,10 @@ class Project(object):
             if scheme not in ('file', 'svn', 'http', 'https'):
                 raise ValueError('Invalid url scheme %s: %s' % (scheme, base_url))
             self.baseURL = base_url.replace(self.repository, '')
-        self.branch = branch
-        self.period = int(period)
+        self.branch = options.get('branch', '')
+        self.period = int(options.get('period', '24'))
 
-        self.kwargs = kwargs
+        self.options = options
 
     def executable(self):
         """returns python bin"""

@@ -17,7 +17,7 @@ class Project(BaseRecipe):
             return '\n' + '    \n'.join(['    %s' % cmd for cmd in cmds])
         project = self.name
         template = open(join(self.recipe_dir, 'project.cfg_tmpl')).read()
-        search_list = {}
+        search_list = dict(name=self.name)
         globs = {}
 
         def normalyse_option(option):
