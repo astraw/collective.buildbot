@@ -1,14 +1,9 @@
 [buildbot]
-port=${port}
-wport=${wport}
-allow-force=${allow_force}
-project-name=${project_name}
-project-url=${project_url}
-buildbot-url=${url}
-projects-directory = ${projects_directory} 
+#for $item in $buildbot
+${item.key} = ${item.value}
+#end for
 
 [slaves]
 #for $slave in $slaves
 ${slave.name}=${slave.password}
 #end for
-

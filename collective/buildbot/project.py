@@ -18,6 +18,7 @@ from buildbot.changes import svnpoller
 from twisted.python import log
 
 from collective.buildbot.scheduler import RepositoryScheduler
+from collective.buildbot.utils import split_option
 
 s = factory.s
 
@@ -64,14 +65,15 @@ class Project(object):
 
         self.mail_host = options.get('mail_host', 'localhost')
         self.email_notification_sender = options.get('email_notification_sender','').strip()
-        self.email_notification_recipients = split_option(options, 'email_notification_recipients')
+        self.email_notification_recipients = split_option(options,
+                                                          'email_notification_recipients')
 
         self.slave_names =  split_option(options, 'slave_names')
         self.vcs = options.get('vcs', 'svn')
         self.poller = options.get('poller', {})
         self.poller_url = options.get('poller_url', '')
 
-        self.test_sequence = options.gets('test_sequence', join('bin', 'test'))
+        self.test_sequence = options.get('test_sequence', join('bin', 'test'))
 
         self.build_sequence = options.get('build_sequence',
                                           [join(self.executable(), 'bootstrap.py'),
@@ -103,7 +105,12 @@ class Project(object):
         raise RuntimeError('No valid bot name in %r' % self.slave_names)
 
     def setStatus(self, c):
-        c['status'].append(mail.MailNotifier(builders=[self.name],
+        if not self.email_notification_sender or not self.email_notification_recipients:
+            log.msg('Skiping MailNotifier for project %s: from: %s, to: %s' % (
+                      self.name, self.email_notification_sender, self.email_notification_recipients))
+        else:
+            builders = ['%s_%s' % (self.name, s) for s in self.slave_names]
+            c['status'].append(mail.MailNotifier(builders=builders,
                            fromaddr=self.email_notification_sender,
                            extraRecipients=self.email_notification_recipients,
                            addLogs=True,

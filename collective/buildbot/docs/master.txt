@@ -52,8 +52,8 @@ Running the buildout gives us::
     Installing buildmaster...
     New python executable in /sample-buildout/parts/buildmaster/bin/python
     Installing setuptools.............done.
-    Generated script /sample-buildout/parts/buildmaster/buildbot.tac.
-    Generated script /sample-buildout/parts/buildmaster/buildbot.cfg.
+    Generated script '/sample-buildout/parts/buildmaster/buildbot.tac'.
+    Generated config '/sample-buildout/parts/buildmaster/buildbot.cfg'.
     Generated script '/sample-buildout/bin/buildmaster'.
 
 As shown above, the buildout generated the required configuration files.
@@ -81,16 +81,16 @@ A buildout config file::
 
     >>> cat(join('parts', 'buildmaster', 'buildbot.cfg'))
     [buildbot]
-    port=8080
-    wport=8082
-    allow-force=false
-    project-name=The project
-    project-url=http://example.com
-    buildbot-url=http://example.com/buildbot
-    projects-directory = /sample-buildout/parts/projects 
+    allow-force = false
+    buildbot-url = http://localhost:9000/
+    port = 8080
+    project-name = The project
+    project-url = http://example.com
+    projects-directory = /sample-buildout/parts/projects
+    url = http://example.com/buildbot
+    wport = 8082
     <BLANKLINE>
     [slaves]
     slave1=password
     slave2=password
-    <BLANKLINE>
 

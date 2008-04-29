@@ -15,52 +15,57 @@ class Recipe(BaseRecipe):
 
     def install(self):
         """Installer"""
-        location = self.location
-        working_directory = location
         files = []
+        options = dict([(k, v) for k, v in self.options.items()])
+        options.pop('recipe')
+
 
         # creates the dir
-        if not os.path.exists(location):
-            os.mkdir(location)
-        if not os.path.exists(self.projects_directory):
-            os.mkdir(self.projects_directory)
+        if not os.path.exists(self.location):
+            os.mkdir(self.location)
 
-        self.create_virtualenv(location)
+        self.create_virtualenv(self.location)
 
         # adds buildbot.tac
         template = open(join(self.recipe_dir, 'buildbot.tac_tmpl')).read()
-        template = template % {'base_dir': working_directory}
-        buildbot_tac = join(location, 'buildbot.tac')
+        template = template % {'base_dir': self.location}
+        buildbot_tac = join(self.location, 'buildbot.tac')
         open(buildbot_tac, 'w').write(str(template))
-        self.log('Generated script %s.' % buildbot_tac)
+        self.log('Generated script %r.' % buildbot_tac)
         files.append(buildbot_tac)
 
         # generates the buildbot.cfg file
-        slaves = self.options.get('slaves', '')
+        slaves = options.pop('slaves')
         slaves = [(slave.split()[0], slave.split()[1])
                   for slave in slaves.split('\n')
                   if slave.strip() != '']
         buildbot_slaves = [{'name': name, 'password': password}
                            for name, password in slaves]
 
-        search_list = {}
-        for key, value in self.options.items():
-            if key == 'slaves':
-                continue
-            key = key.replace('-', '_')
-            search_list[key] = value
+        for k, v in (('port', '8999'), ('wport', '9000'),
+                     ('project-name', 'Buildbot'),
+                     ('allow-force', 'false'),
+                     ('projects-directory', self.projects_directory.strip())):
+            options.setdefault(k, v)
+        for k, v in (('url', 'http://localhost:%s/'),
+                     ('project-url', 'http://localhost:%s/')):
+            options.setdefault(k, v % options['wport'])
 
-        search_list['projects_directory'] = self.projects_directory
-        search_list['slaves'] = buildbot_slaves
-        search_list.setdefault('allow_force', 'false')
+        options = [{'key': k, 'value': v}
+                           for k, v in sorted(options.items())]
+
+        globs = dict(buildbot=options,
+                     slaves=buildbot_slaves)
+
         template = join(self.recipe_dir, 'buildbot.cfg_tmpl')
         template = CheetahTemplate(open(template).read(),
-                                   searchList=[search_list])
-        buildbot_cfg = join(location, 'buildbot.cfg')
+                                   searchList=[globs])
+        buildbot_cfg = join(self.location, 'buildbot.cfg')
         open(buildbot_cfg, 'w').write(str(template))
-        self.log('Generated script %s.' % buildbot_cfg)
+        self.log('Generated config %r.' % buildbot_cfg)
         files.append(buildbot_cfg)
 
+        # generate script
         options = {'eggs':'collective.buildbot',
                    'entry-points': '%s=collective.buildbot.scripts:main' % self.name,
                    'arguments': 'location=%r, config_file=%r' % (self.location, buildbot_cfg)
