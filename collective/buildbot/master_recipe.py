@@ -6,7 +6,6 @@ from os.path import join
 import shutil
 import zc.buildout
 import zc.recipe.egg
-from Cheetah.Template import Template as CheetahTemplate
 from collective.buildbot.recipe import BaseRecipe
 import virtualenv
 
@@ -36,11 +35,9 @@ class Recipe(BaseRecipe):
 
         # generates the buildbot.cfg file
         slaves = options.pop('slaves')
-        slaves = [(slave.split()[0], slave.split()[1])
+        slaves = dict([(slave.split()[0], slave.split()[1])
                   for slave in slaves.split('\n')
-                  if slave.strip() != '']
-        buildbot_slaves = [{'name': name, 'password': password}
-                           for name, password in slaves]
+                  if slave.strip() != ''])
 
         for k, v in (('port', '8999'), ('wport', '9000'),
                      ('project-name', 'Buildbot'),
@@ -51,19 +48,11 @@ class Recipe(BaseRecipe):
                      ('project-url', 'http://localhost:%s/')):
             options.setdefault(k, v % options['wport'])
 
-        options = [{'key': k, 'value': v}
-                           for k, v in sorted(options.items())]
-
         globs = dict(buildbot=options,
-                     slaves=buildbot_slaves)
+                     slaves=slaves)
 
-        template = join(self.recipe_dir, 'buildbot.cfg_tmpl')
-        template = CheetahTemplate(open(template).read(),
-                                   searchList=[globs])
         buildbot_cfg = join(self.location, 'buildbot.cfg')
-        open(buildbot_cfg, 'w').write(str(template))
-        self.log('Generated config %r.' % buildbot_cfg)
-        files.append(buildbot_cfg)
+        files.append(self.write_config(buildbot_cfg, **globs))
 
         # generate script
         options = {'eggs':'collective.buildbot',

@@ -1,9 +1,0 @@
-[buildbot]
-#for $item in $buildbot
-${item.key} = ${item.value}
-#end for
-
-[slaves]
-#for $slave in $slaves
-${slave.name}=${slave.password}
-#end for

@@ -5,6 +5,7 @@ import shutil
 import virtualenv
 import zc.recipe.egg
 from os.path import join
+from ConfigParser import ConfigParser
 
 class BaseRecipe(object):
 
@@ -37,4 +38,16 @@ class BaseRecipe(object):
 
             if is_posix:
                 os.chmod(join(location, 'bin', executable), 0755)
+
+    def write_config(self, filename, **kwargs):
+        config = ConfigParser()
+        for section, options in sorted(kwargs.items(), reverse=True):
+            config.add_section(section)
+            for key, value in sorted(options.items(), reverse=True):
+                config.set(section, key, value)
+        fd = open(filename, 'w')
+        config.write(fd)
+        fd.close()
+        self.log('Generated config %r.' % filename)
+        return filename
 

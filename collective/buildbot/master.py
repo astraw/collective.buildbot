@@ -38,12 +38,12 @@ c['builders'] = []
 c['status'] = []
 
 # slave configurations
-if config.has_option('buildbot', 'max_builds'):
+if config.has_option('buildbot', 'max-builds'):
     max_builds = config.get('buildbot', 'max-builds')
 else:
     max_builds = None
 if config.has_option('buildbot', 'notify-on-missing'):
-    notify_on_missing = config.get('buildbot', 'notify-on-missing')
+    notify_on_missing = [config.get('buildbot', 'notify-on-missing')]
 else:
     notify_on_missing = []
 

@@ -21,7 +21,6 @@ def setUp(test):
     # Install any other recipes that should be available in the tests
     zc.buildout.testing.install_develop('zc.recipe.egg', test)
     zc.buildout.testing.install_develop('virtualenv', test)
-    zc.buildout.testing.install_develop('Cheetah', test)
     zc.buildout.testing.install_develop('zope.interface', test)
     zc.buildout.testing.install_develop('Twisted', test)
     zc.buildout.testing.install_develop('buildbot', test)

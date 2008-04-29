@@ -80,16 +80,17 @@ Twisted .tac file to launch buildbot::
 A buildout config file::
 
     >>> cat(join('parts', 'buildmaster', 'buildbot.cfg'))
+    [slaves]
+    slave1 = password
+    slave2 = password
+    <BLANKLINE>
     [buildbot]
-    allow-force = false
-    port = 8080
-    project-name = The project
-    project-url = http://example.com
     projects-directory = /sample-buildout/parts/projects
+    project-name = The project
     url = http://example.com/buildbot
     wport = 8082
+    project-url = http://example.com
+    port = 8080
+    allow-force = false
     <BLANKLINE>
-    [slaves]
-    slave1=password
-    slave2=password
 

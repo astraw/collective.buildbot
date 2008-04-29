@@ -81,49 +81,50 @@ Running the buildout gives us::
 
     >>> print system(buildout)
     Installing one.
-    Generated project config '/sample-buildout/parts/projects/one.cfg'.
+    Generated config '/sample-buildout/parts/projects/one.cfg'.
     Installing two.
-    Generated project config '/sample-buildout/parts/projects/two.cfg'.
+    Generated config '/sample-buildout/parts/projects/two.cfg'.
 
 
 This will generate a config file for each project::
 
     >>> cat(join('parts', 'projects', 'one.cfg'))
     [project]
-    base-url=http://example.com/svn/my.package/trunk
-    branch=
-    build-sequence=
-        python bootstrap.py    
+    build-sequence = python bootstrap.py
         bin/buildout
-    email-notification-recipient=
+    name = one
+    repository = 
+    email-notification-sender = foo@bar.com
+    slave-names = slave1
+    recipe = collective.buildbot:project
+    mail-host = localhost
+    email-notification-recipient = 
         bar@foo.com
         buildbot@foo.com
-    email-notification-sender=foo@bar.com
-    mail-host=localhost
-    name=one
-    repository=
-    slave-names=slave1
-    test-sequence=
-        bin/test --exit-with-status
-    vcs=svn
+    test-sequence = bin/test --exit-with-status
+    vcs = svn
+    branch = 
+    base-url = http://example.com/svn/my.package/trunk
+    <BLANKLINE>
 
     >>> cat(join('parts', 'projects', 'two.cfg'))
     [project]
-    base-url=http://example.com
-    branch=trunk
-    build-sequence=
-        python bootstrap.py    
+    build-sequence = python bootstrap.py
         bin/buildout
-    email-notification-recipient=barfoo@foobar.com
-    email-notification-sender=foobar@barfoo.com
-    mail-host=localhost
-    name=two
-    repository=svn/buildout
-    slave-names=slave2
-    test-sequence=
-        bin/zopeinstance test -s product.one    
+    name = two
+    repository = svn/buildout
+    email-notification-sender = foobar@barfoo.com
+    slave-names = slave2
+    recipe = collective.buildbot:project
+    mail-host = localhost
+    email-notification-recipient = barfoo@foobar.com
+    test-sequence = 
+        bin/zopeinstance test -s product.one
         bin/zopeinstance test -s product.two
-    vcs=svn
+    vcs = svn
+    branch = trunk
+    base-url = http://example.com
+    <BLANKLINE>
 
 Pollers
 =======
@@ -174,37 +175,37 @@ We can define a poller to make our buildbot aware of commits::
     Uninstalling two.
     Uninstalling one.
     Installing one.
-    Generated project config '/sample-buildout/parts/projects/one.cfg'.
+    Generated config '/sample-buildout/parts/projects/one.cfg'.
     Installing two.
-    Generated project config '/sample-buildout/parts/projects/two.cfg'.
+    Generated config '/sample-buildout/parts/projects/two.cfg'.
 
 Poller generation::
 
     >>> cat(join('parts', 'projects', 'one.cfg'))
     [project]
-    base-url=http://example.com
-    branch=trunk
-    build-sequence=
-        python bootstrap.py    
+    build-sequence = python bootstrap.py
         bin/buildout
-    email-notification-recipient=
+    name = one
+    repository = svn/my.package
+    email-notification-sender = foo@bar.com
+    slave-names = slave1
+    recipe = collective.buildbot:project
+    mail-host = localhost
+    email-notification-recipient = 
         bar@foo.com
         buildbot@foo.com
-    email-notification-sender=foo@bar.com
-    mail-host=localhost
-    name=one
-    repository=svn/my.package
-    slave-names=slave1
-    test-sequence=
-        bin/test --exit-with-status
-    vcs=svn
+    test-sequence = bin/test --exit-with-status
+    vcs = svn
+    branch = trunk
+    base-url = http://example.com
     <BLANKLINE>
     [poller]
-    hist-max=100
-    multi-branch=false
-    password=passwd
-    poll-interval=600
-    svn-binary=svn
-    url=http://example.com/svn/buildout
-    user=h4x0r
+    hist-max = 100
+    multi-branch = false
+    url = http://example.com/svn/buildout
+    user = h4x0r
+    svn-binary = svn
+    password = passwd
+    poll-interval = 600
+    <BLANKLINE>
 

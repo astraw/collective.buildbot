@@ -73,11 +73,15 @@ class Project(object):
         self.poller = options.get('poller', {})
         self.poller_url = options.get('poller_url', '')
 
-        self.test_sequence = options.get('test_sequence', join('bin', 'test'))
+        self.build_sequence = split_option(options, 'build_sequence')
+        if not self.build_sequence:
+            self.build_sequence = [join(self.executable(), 'bootstrap.py'),
+                                   join('bin', 'buildout')]
 
-        self.build_sequence = options.get('build_sequence',
-                                          [join(self.executable(), 'bootstrap.py'),
-                                          join('bin', 'buildout')])
+        self.test_sequence = split_option(options, 'test_sequence')
+        if not self.test_sequence:
+            self.test_sequence = [join('bin', 'test')]
+
         base_url = options.get('base_url')
         repository = options.get('repository', '')
         if repository:
@@ -89,6 +93,7 @@ class Project(object):
                 raise ValueError('Invalid url scheme %s: %s' % (scheme, base_url))
             self.baseURL = base_url.replace(self.repository, '')
         self.branch = options.get('branch', '')
+
         self.period = int(options.get('period', '24'))
 
         self.options = options
@@ -191,11 +196,11 @@ class Project(object):
             return cmd
 
         build_sequence = [s(steps.shell.ShellCommand, command=_cmd(cmd))
-                          for cmd in self.build_sequence.splitlines()
+                          for cmd in self.build_sequence
                           if cmd.strip() != '']
 
         test_sequence = [s(steps.shell.Test, command=_cmd(cmd))
-                         for cmd in self.test_sequence.splitlines()
+                         for cmd in self.test_sequence
                          if cmd.strip() != '']
 
 
