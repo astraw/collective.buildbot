@@ -82,7 +82,6 @@ A buildout config file::
     >>> cat(join('parts', 'buildmaster', 'buildbot.cfg'))
     [buildbot]
     allow-force = false
-    buildbot-url = http://localhost:9000/
     port = 8080
     project-name = The project
     project-url = http://example.com
