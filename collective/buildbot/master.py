@@ -10,6 +10,7 @@ from buildbot.buildslave import BuildSlave
 
 from twisted.python import log
 from collective.buildbot.project import Project
+from collective.buildbot.poller import Poller
 from ConfigParser import ConfigParser
 
 config = ConfigParser()
@@ -51,25 +52,25 @@ c['slaves'] = [BuildSlave(name, password, max_builds=max_builds,
                           notify_on_missing=[],
                           missing_timeout=3600) for name, password in config.items('slaves')]
 
+for name, klass in (('project', Project), ('poller', Poller)):
+    files = dict()
+    dirname = config.get('buildbot', '%ss-directory' % name)
+    for filename in os.listdir(dirname):
+        if filename.endswith('.cfg'):
+            filename = os.path.join(dirname, filename)
+            pconf = ConfigParser()
+            pconf.read(filename)
+
+            kwargs = dict([(key.replace('-', '_'), value)
+                                for key, value
+                                in pconf.items(name)])
+            klass(**kwargs)(c)
+
 projects_dir = config.get('buildbot', 'projects-directory')
 files = []
 for filename in os.listdir(projects_dir):
     if filename.endswith('.cfg'):
         files.append(os.path.join(projects_dir, filename))
-
-
-for projectcfg in files:
-    pconf = ConfigParser()
-    pconf.read(projectcfg)
-
-    kwargs = dict([(key.replace('-', '_'), value)
-                        for key, value
-                        in pconf.items('project')])
-    if 'poller' in pconf.sections():
-        kwargs['poller'] = dict([(key.replace('-', '_'), value)
-                                 for key, value
-                                 in pconf.items('poller')])
-    Project(**kwargs)(c)
 
 
 ######################################################

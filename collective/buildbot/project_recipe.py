@@ -8,23 +8,24 @@ from collective.buildbot.recipe import BaseRecipe
 
 class Project(BaseRecipe):
 
+    config_dir = 'projects'
+
     def install(self):
         """generates .cfg files"""
         files = []
         project = self.name
-        search_list = dict(name=self.name)
-        globs = {}
+        globs = dict(name=self.name)
 
         # default values in buildout section
         valid_args = ('mail-host', 'email-notification-sender',
                       'email-notification-recipients',)
         for key, value in self.buildout['buildout'].items():
             if key in valid_args:
-                search_list[key] = value
+                globs[key] = value
 
         # project values
         for key, value in self.options.items():
-            search_list[key] = value
+            globs[key] = value
 
         for k, v in (('vcs', 'svn'),
                      ('branch', 'trunk'),
@@ -38,25 +39,11 @@ class Project(BaseRecipe):
                                              ['python bootstrap.py',
                                               join('bin', 'buildout')])),
                      ):
-            search_list.setdefault(k, v)
+            globs.setdefault(k, v)
 
-        search_list['branch'] = '%s/%s' % (self.name, search_list['branch'])
+        globs['branch'] = '%s/%s' % (self.name, globs['branch'])
 
-        poller = None
-        if 'poller' in search_list:
-            poller = search_list.pop('poller')
-
-        globs = dict(project=search_list)
-
-        if poller:
-            poller_conf = self.buildout[poller]
-            globs['poller'] = poller_conf
-
-        if not os.path.isdir(self.projects_directory):
-            os.mkdir(self.projects_directory)
-
-        target = join(self.projects_directory, '%s.cfg' % project)
-        files.append(self.write_config(target, **globs))
+        files.append(self.write_config(project, **{'project':globs}))
 
         return files
 

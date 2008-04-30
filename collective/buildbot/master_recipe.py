@@ -39,11 +39,15 @@ class Recipe(BaseRecipe):
                   for slave in slaves.split('\n')
                   if slave.strip() != ''])
 
+        parts_directory = join(self.buildout['buildout']['parts-directory'])
+        for k in ( 'projects', 'pollers'):
+            options.setdefault('%s-directory' % k, join(parts_directory, k))
+
         for k, v in (('port', '8999'), ('wport', '9000'),
                      ('project-name', 'Buildbot'),
-                     ('allow-force', 'false'),
-                     ('projects-directory', self.projects_directory.strip())):
+                     ('allow-force', 'false')):
             options.setdefault(k, v)
+
         for k, v in (('url', 'http://localhost:%s/'),
                      ('project-url', 'http://localhost:%s/')):
             options.setdefault(k, v % options['wport'])
@@ -51,13 +55,13 @@ class Recipe(BaseRecipe):
         globs = dict(buildbot=options,
                      slaves=slaves)
 
-        buildbot_cfg = join(self.location, 'buildbot.cfg')
-        files.append(self.write_config(buildbot_cfg, **globs))
+        files.append(self.write_config('buildbot', **globs))
 
         # generate script
         options = {'eggs':'collective.buildbot',
                    'entry-points': '%s=collective.buildbot.scripts:main' % self.name,
-                   'arguments': 'location=%r, config_file=%r' % (self.location, buildbot_cfg)
+                   'arguments': 'location=%r, config_file=%r' % (
+                       self.location, join(self.location, 'buildbot.cfg'))
                   }
         script = zc.recipe.egg.Egg(self.buildout, self.name, options)
         files.extend(list(script.install()))

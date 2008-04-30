@@ -9,6 +9,8 @@ from ConfigParser import ConfigParser
 
 class BaseRecipe(object):
 
+    config_dir = ''
+
     def log(self, msg):
         print msg
 
@@ -17,9 +19,10 @@ class BaseRecipe(object):
     def __init__(self, buildout, name, options):
         self.buildout, self.name, self.options = buildout, name, options
         self.location = join(buildout['buildout']['parts-directory'], self.name)
-        self.projects_directory = join(buildout['buildout']['parts-directory'], 'projects')
-        eggs = zc.recipe.egg.Eggs(buildout, 'collective.buildbot', dict(eggs='collective.buildbot'))
-        _, self.ws = eggs.working_set()
+        dirname = join(self.buildout['buildout']['parts-directory'],
+                        self.config_dir or self.name)
+        if not os.path.isdir(dirname):
+            os.mkdir(dirname)
 
     def create_virtualenv(self, location):
         old = sys.argv
@@ -39,12 +42,14 @@ class BaseRecipe(object):
             if is_posix:
                 os.chmod(join(location, 'bin', executable), 0755)
 
-    def write_config(self, filename, **kwargs):
+    def write_config(self, name, **kwargs):
         config = ConfigParser()
         for section, options in sorted(kwargs.items(), reverse=True):
             config.add_section(section)
             for key, value in sorted(options.items(), reverse=True):
                 config.set(section, key, value)
+        filename = join(self.buildout['buildout']['parts-directory'],
+                        self.config_dir or self.name, '%s.cfg' % name)
         fd = open(filename, 'w')
         config.write(fd)
         fd.close()

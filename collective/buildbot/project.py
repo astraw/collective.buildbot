@@ -2,13 +2,14 @@ import os
 import sys
 import time
 import urlparse
-import os.path
+import random
 import datetime
 from glob import glob
 from os.path import join
 
 from buildbot.scheduler import Scheduler
 from buildbot.scheduler import Periodic
+from buildbot.scheduler import Nightly
 from buildbot.process import factory
 from buildbot import steps
 from buildbot.status import html
@@ -20,6 +21,13 @@ from twisted.python import log
 from collective.buildbot.utils import split_option
 
 s = factory.s
+
+def split_file(path):
+    parts = path.split('/')
+    if len(parts) < 2:
+        return None
+    project, branch = parts[0], parts[1]
+    return ('%s/%s' % (project, branch), '/'.join(parts[2:]))
 
 class Project(object):
     """A builbot project::
@@ -69,8 +77,6 @@ class Project(object):
 
         self.slave_names =  split_option(options, 'slave_names')
         self.vcs = options.get('vcs', 'svn')
-        self.poller = options.get('poller', {})
-        self.poller_url = options.get('poller_url', '')
 
         self.build_sequence = split_option(options, 'build_sequence')
         if not self.build_sequence:
@@ -92,8 +98,6 @@ class Project(object):
                 raise ValueError('Invalid url scheme %s: %s' % (scheme, base_url))
             self.baseURL = base_url.replace(self.repository, '')
         self.branch = options.get('branch', '')
-
-        self.period = int(options.get('period', '24'))
 
         self.options = options
 
@@ -128,31 +132,11 @@ class Project(object):
             self.setScheduler(c)
             self.setBuilder(c)
             self.setStatus(c)
-            self.setPoller(c)
         except Exception, e:
             log.msg('Error while adding the %s project: %r %s' % (self.name, e, e))
             raise
 
         log.msg('Project %s added' % self.name)
-
-    def setPoller(self, c):
-        """Configure the poller for the project."""
-        if self.poller is None:
-            return
-
-        # TODO: Make sure that we don't create duplicate pollers!
-
-        if self.vcs == 'svn':
-            log.msg('Adding poller to project %s' % self.name)
-            url = self.poller_url or urlparse.urljoin(self.baseURL, self.repository)
-            c['change_source'].append(svnpoller.SVNPoller(
-                    svnurl=url,
-                    pollinterval=int(self.poller.get('poll_interval', 600)),
-                    svnuser=self.poller.get('user', None),
-                    svnpasswd=self.poller.get('password', None),
-                    svnbin=self.poller.get('svn_binary', 'svn'),
-                    #split_file=svnpoller.split_file_branches,
-                    ))
 
     def builder(self, name):
         return '%s %s' % (self.name, name)
@@ -161,16 +145,33 @@ class Project(object):
         return [self.builder(s) for s in self.slave_names]
 
     def setScheduler(self, c):
-        snames = [s.name for s in c['schedulers']]
-        periodic = Periodic('Periodic %s' % self.name,
-                            self.builders(),
-                            self.period*60*60)
-        scheduler = Scheduler(
-                            name='RepositoryScheduler %s' % self.name,
-                            branch=self.branch,
-                            treeStableTimer=2*60,
-                            builderNames=self.builders())
-        c['schedulers'].extend([scheduler, periodic])
+        schedulers = []
+
+        scheduler = self.options.get('scheduler', None)
+        if scheduler:
+            schedulers.append(Scheduler(name=self.name,
+                                        branch=self.branch,
+                                        treeStableTimer=2*60,
+                                        builderNames=self.builders()))
+
+        hours = self.options.get('hours', None)
+        if hours:
+            minute = random.randint(1, 59)
+            if '*' in hours:
+                values = '*'
+                name = 'Nightly scheduler for %s at *:%s' % (self.name, minute)
+            else:
+                values = [int(v) for v in hours.split(' ') if v]
+                name = 'Nightly scheduler for %s at %s' % (self.name,
+                              ' '.join(['%s:%s' % (v, minute) for v in values]))
+            schedulers.append(Nightly(name,
+                                      self.builders(),
+                                      hour=values,
+                                      minute=minute))
+
+        log.msg('Adding schedulers for %s: %s' % (self.name, schedulers))
+
+        c['schedulers'].extend(schedulers)
 
     def setBuilder(self, c):
         executable = self.executable()

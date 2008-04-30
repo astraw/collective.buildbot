@@ -33,6 +33,7 @@ def test_suite():
                   'master.txt',
                   'slave.txt',
                   'project.txt',
+                  'poller.txt',
                  ]
     suite = unittest.TestSuite([
             doctest.DocFileSuite(

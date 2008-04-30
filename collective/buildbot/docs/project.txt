@@ -19,10 +19,6 @@ base-url
   base url for the project (Subversion) You can use it to point to the trunk
   directory of a project.
 
-repository
-
-  path in the repository. Default to ''
-
 branch
 
   last part of the url. Default to 'trunk'. Not used if you provide a base url
@@ -42,8 +38,8 @@ test-sequence
   The sequence of shell commands that are run to test the project.
   Defaults to 'bin/test'
     
-The buildbot will use base-url/repository/branch to get the full url to be
-retrieved for the checkout.
+The buildbot will use base-url/project/branch to get the full url to
+be retrieved for the checkout.
 
 Example usage
 =============
@@ -53,159 +49,51 @@ We'll start by creating a buildout that uses the recipe::
     >>> write('buildout.cfg',
     ... """
     ... [buildout]
-    ... parts = one two
+    ... parts = my.package
     ... 
-    ... [one]
+    ... [my.package]
     ... recipe = collective.buildbot:project
     ... slave-names = slave1
-    ... email-notification-sender = foo@bar.com
-    ... email-notification-recipient =
-    ...     bar@foo.com
-    ...     buildbot@foo.com
-    ... base-url = http://example.com/svn/my.package/trunk 
+    ... base-url = http://example.com/svn/ 
     ...
-    ... [two]
-    ... recipe = collective.buildbot:project
-    ... slave-names = slave2
-    ... email-notification-sender = foobar@barfoo.com
-    ... email-notification-recipient = barfoo@foobar.com
-    ... base-url = http://example.com
-    ... repository = svn/buildout
-    ... branch = trunk
-    ... test-sequence =
-    ...     bin/zopeinstance test -s product.one
-    ...     bin/zopeinstance test -s product.two
     ... """)
+
+This will test the package located at `http://example.com/svn/my.package/trunk`
 
 Running the buildout gives us::
 
     >>> print system(buildout)
-    Installing one.
-    Generated config '/sample-buildout/parts/projects/one.cfg'.
-    Installing two.
-    Generated config '/sample-buildout/parts/projects/two.cfg'.
-
+    Installing my.package.
+    Generated config '/sample-buildout/parts/projects/my.package.cfg'.
 
 This will generate a config file for each project::
 
-    >>> cat(join('parts', 'projects', 'one.cfg'))
+    >>> cat(join('parts', 'projects', 'my.package.cfg'))
     [project]
-    build-sequence = python bootstrap.py
-        bin/buildout
-    name = one
-    repository = 
-    email-notification-sender = foo@bar.com
+    ...
+    name = my.package
+    ...
     slave-names = slave1
-    recipe = collective.buildbot:project
-    mail-host = localhost
-    email-notification-recipient = 
-        bar@foo.com
-        buildbot@foo.com
-    test-sequence = bin/test --exit-with-status
-    vcs = svn
-    branch = 
-    base-url = http://example.com/svn/my.package/trunk
+    ...
+    branch = my.package/trunk
+    base-url = http://example.com/svn/
     <BLANKLINE>
 
-    >>> cat(join('parts', 'projects', 'two.cfg'))
-    [project]
-    build-sequence = python bootstrap.py
-        bin/buildout
-    name = two
-    repository = svn/buildout
-    email-notification-sender = foobar@barfoo.com
-    slave-names = slave2
-    recipe = collective.buildbot:project
-    mail-host = localhost
-    email-notification-recipient = barfoo@foobar.com
-    test-sequence = 
-        bin/zopeinstance test -s product.one
-        bin/zopeinstance test -s product.two
-    vcs = svn
-    branch = trunk
-    base-url = http://example.com
-    <BLANKLINE>
-
-Pollers
-=======
-
-We can define a poller to make our buildbot aware of commits:: 
+Email notification::
 
     >>> write('buildout.cfg',
     ... """
     ... [buildout]
-    ... parts = one two
+    ... parts = my.package
     ... 
-    ... [one]
+    ... [my.package]
     ... recipe = collective.buildbot:project
     ... slave-names = slave1
     ... email-notification-sender = foo@bar.com
     ... email-notification-recipient =
     ...     bar@foo.com
     ...     buildbot@foo.com
-    ... base-url = http://example.com 
-    ... repository = svn/my.package
-    ... branch = trunk
-    ... poller = svnpoller
+    ... base-url = http://example.com/svn/ 
     ...
-    ... [two]
-    ... recipe = collective.buildbot:project
-    ... slave-names = slave2
-    ... email-notification-sender = foobar@barfoo.com
-    ... email-notification-recipient = barfoo@foobar.com
-    ... base-url = http://example.com
-    ... repository = svn/buildout
-    ... branch = trunk
-    ... poller = svnpoller
-    ... test-sequence =
-    ...     bin/zopeinstance test -s product.one
-    ...     bin/zopeinstance test -s product.two
-    ... 
-    ... [svnpoller]
-    ... url = http://example.com/svn/buildout
-    ... user = h4x0r
-    ... password = passwd
-    ... poll-interval = 600
-    ... hist-max = 100
-    ... svn-binary = svn
-    ... multi-branch = false
     ... """)
-
-    >>> print system(buildout)
-    Uninstalling two.
-    Uninstalling one.
-    Installing one.
-    Generated config '/sample-buildout/parts/projects/one.cfg'.
-    Installing two.
-    Generated config '/sample-buildout/parts/projects/two.cfg'.
-
-Poller generation::
-
-    >>> cat(join('parts', 'projects', 'one.cfg'))
-    [project]
-    build-sequence = python bootstrap.py
-        bin/buildout
-    name = one
-    repository = svn/my.package
-    email-notification-sender = foo@bar.com
-    slave-names = slave1
-    recipe = collective.buildbot:project
-    mail-host = localhost
-    email-notification-recipient = 
-        bar@foo.com
-        buildbot@foo.com
-    test-sequence = bin/test --exit-with-status
-    vcs = svn
-    branch = trunk
-    base-url = http://example.com
-    <BLANKLINE>
-    [poller]
-    hist-max = 100
-    multi-branch = false
-    url = http://example.com/svn/buildout
-    user = h4x0r
-    svn-binary = svn
-    password = passwd
-    poll-interval = 600
-    <BLANKLINE>
 

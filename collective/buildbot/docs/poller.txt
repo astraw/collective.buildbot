@@ -1,0 +1,70 @@
+The project recipe
+******************
+
+Supported options
+=================
+
+The recipe supports the following options:
+
+    Lists the projects the buildbot deal with (one project=one column) The
+    values must be a section name in the configuration file.  Then each of this
+    section must contain:
+    
+vcs
+
+  Default to svn
+
+base-url
+
+  Root url for the repository.
+
+hist-max
+
+  Number of history lines to look at (Default 100).
+
+user
+
+  A svn user (Default None).
+
+password
+
+  A valid svn password for the user (Default None).
+
+poll-interval
+
+  Interval in second to check for changes.
+
+Example usage
+=============
+
+We can define a poller to make our buildbot aware of commits:: 
+
+    >>> write('buildout.cfg',
+    ... """
+    ... [buildout]
+    ... parts = svnpoller
+    ... 
+    ... [svnpoller]
+    ... recipe = collective.buildbot:poller
+    ... base-url = http://example.com/svn/buildout
+    ... user = h4x0r
+    ... password = passwd
+    ... """)
+
+    >>> print system(buildout)
+    Installing svnpoller.
+    Generated config '/sample-buildout/parts/pollers/svnpoller.cfg'.
+
+Poller generation. You can see here all the available options::
+
+    >>> cat(join('parts', 'pollers', 'svnpoller.cfg'))
+    [poller]
+    hist-max = 100
+    base-url = http://example.com/svn/buildout
+    vcs = svn
+    user = h4x0r
+    svn-binary = svn
+    password = passwd
+    poll-interval = 60
+    <BLANKLINE>
+
