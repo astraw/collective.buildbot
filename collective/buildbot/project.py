@@ -114,8 +114,7 @@ class Project(object):
             log.msg('Skiping MailNotifier for project %s: from: %s, to: %s' % (
                       self.name, self.email_notification_sender, self.email_notification_recipients))
         else:
-            builders = ['%s_%s' % (self.name, s) for s in self.slave_names]
-            c['status'].append(mail.MailNotifier(builders=builders,
+            c['status'].append(mail.MailNotifier(builders=self.builders(),
                            fromaddr=self.email_notification_sender,
                            extraRecipients=self.email_notification_recipients,
                            addLogs=True,
@@ -156,18 +155,22 @@ class Project(object):
                     #split_file=svnpoller.split_file_branches,
                     ))
 
+    def builder(self, name):
+        return '%s %s' % (self.name, name)
+
+    def builders(self):
+        return [self.builder(s) for s in self.slave_names]
 
     def setScheduler(self, c):
         snames = [s.name for s in c['schedulers']]
-        slave_names = ['%s_%s' % (self.name, s) for s in self.slave_names]
         periodic = Periodic('Periodic %s' % self.name,
-                            slave_names,
+                            self.builders(),
                             self.period*60*60)
         scheduler = RepositoryScheduler(
                             name='RepositoryScheduler %s' % self.name,
                             branch=self.branch,
                             treeStableTimer=2*60,
-                            builderNames=slave_names,
+                            builderNames=self.builders(),
                             repository=self.repository)
         c['schedulers'].extend([scheduler, periodic])
 
@@ -209,7 +212,7 @@ class Project(object):
         for slave_name in self.slave_names:
             log.msg('Adding slave %s to %s project' % (slave_name, self.name))
             name = '%s_%s' % (self.name, slave_name)
-            builder = {'name': name,
+            builder = {'name': self.builder(slave_name),
                        'slavename': slave_name,
                        'builddir': name,
                        'factory': factory.BuildFactory(sequence)
