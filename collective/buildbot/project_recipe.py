@@ -5,6 +5,7 @@ import urlparse
 from os.path import join
 from collective.buildbot.recipe import BaseRecipe
 
+
 class Project(BaseRecipe):
 
     def install(self):
@@ -26,7 +27,7 @@ class Project(BaseRecipe):
             search_list[key] = value
 
         for k, v in (('vcs', 'svn'),
-                     ('branch', ''),
+                     ('branch', 'trunk'),
                      ('base-url', ''),
                      ('mail-host', 'localhost'),
                      ('repository', ''),
@@ -38,6 +39,8 @@ class Project(BaseRecipe):
                                               join('bin', 'buildout')])),
                      ):
             search_list.setdefault(k, v)
+
+        search_list['branch'] = '%s/%s' % (self.name, search_list['branch'])
 
         poller = None
         if 'poller' in search_list:
@@ -73,8 +76,8 @@ class Projects(BaseRecipe):
             branch = 'trunk'
         files = []
         for project in projects:
-            options['base-url'] = urlparse.urljoin(
-                                    base_url, '%s/%s' % (project, branch))
+            options['base-url'] = base_url
+            options['branch'] = branch
             p = Project(self.buildout, project, options)
             files.extend(p.install())
         return files

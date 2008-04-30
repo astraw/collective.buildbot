@@ -17,7 +17,6 @@ from buildbot.changes.pb import PBChangeSource
 from buildbot.changes import svnpoller
 from twisted.python import log
 
-from collective.buildbot.scheduler import RepositoryScheduler
 from collective.buildbot.utils import split_option
 
 s = factory.s
@@ -166,12 +165,11 @@ class Project(object):
         periodic = Periodic('Periodic %s' % self.name,
                             self.builders(),
                             self.period*60*60)
-        scheduler = RepositoryScheduler(
+        scheduler = Scheduler(
                             name='RepositoryScheduler %s' % self.name,
                             branch=self.branch,
                             treeStableTimer=2*60,
-                            builderNames=self.builders(),
-                            repository=self.repository)
+                            builderNames=self.builders())
         c['schedulers'].extend([scheduler, periodic])
 
     def setBuilder(self, c):
