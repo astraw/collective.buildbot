@@ -40,12 +40,12 @@ class Pollers(BaseRecipe):
 
     def install(self):
         options = dict([(k,v) for k,v in self.options.items()])
-        pollers = options.pop('pollers')
-        pollers = pollers.split('\n')
-        pollers = [p.strip() for p in pollers if p.strip()]
+        urls = options.pop('base-urls')
+        urls = urls.split('\n')
+        urls = [p.strip() for p in urls if p.strip()]
         files = []
-        for project in projects:
-            options['base-url'] = base_url
+        for url in urls:
+            options['base-url'] = url
             p = Poller(self.buildout, project, options)
             files.extend(p.install())
         return files

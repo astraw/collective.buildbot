@@ -68,3 +68,17 @@ Poller generation. You can see here all the available options::
     poll-interval = 60
     <BLANKLINE>
 
+
+The pollers recipe
+*******************
+
+Supported options
+=================
+
+Options are the same than the project except one.
+
+base-urls
+
+  A list of repository urls to look for.
+
+  

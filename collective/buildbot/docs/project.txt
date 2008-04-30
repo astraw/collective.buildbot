@@ -10,19 +10,26 @@ The recipe supports the following options:
     values must be a section name in the configuration file.  Then each of this
     section must contain:
     
-slave-name
+slave-names
 
-  the slave used
+  A list of slaves name to use for the project.
 
 base-url
 
-  base url for the project (Subversion) You can use it to point to the trunk
-  directory of a project.
+  Base url for the repository.
 
 branch
 
-  last part of the url. Default to 'trunk'. Not used if you provide a base url
+  Last part of the url. Default to 'trunk'. Not used if you provide a base url
   ended with 'trunk'.
+
+email-notification-sender
+
+  An email to send mail with.
+
+email-notification-recipients
+
+  A set of lines with emails to send mail to.
 
 build-sequence
 
@@ -97,3 +104,16 @@ Email notification::
     ...
     ... """)
 
+The projects recipe
+*******************
+
+Supported options
+=================
+
+Options are the same than the project except one.
+
+projects
+
+  A list of projects name.
+
+  
