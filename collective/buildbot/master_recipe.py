@@ -42,6 +42,8 @@ class Recipe(BaseRecipe):
         if 'public-html' in options:
             dirname = options.pop('public-html')
             for filename in os.listdir(dirname):
+                if filename.startswith('.'):
+                    continue
                 destination = os.path.join(public_html, filename)
                 shutil.copyfile(os.path.join(dirname, filename), destination)
                 if destination not in files:
