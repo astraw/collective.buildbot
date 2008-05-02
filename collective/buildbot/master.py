@@ -4,11 +4,11 @@ import time
 import os.path
 import os
 from buildbot.process import buildstep, factory
-from buildbot.status import html
 from buildbot.changes.pb import PBChangeSource
 from buildbot.buildslave import BuildSlave
 
 from twisted.python import log
+from collective.buildbot.overrides import WebStatus
 from collective.buildbot.project import Project
 from collective.buildbot.poller import Poller
 from ConfigParser import ConfigParser
@@ -80,7 +80,7 @@ if config.has_option('buildbot', 'allow-force'):
     allowForce = config.get('buildbot', 'allow-force') == 'true'
 
 
-c['status'].append(html.WebStatus(http_port=wport, allowForce=allowForce))
+c['status'].append(WebStatus(http_port=wport, allowForce=allowForce))
 ######################################################
 c['slavePortnum'] = port
 c['projectName'] = config.get('buildbot', 'project-name')

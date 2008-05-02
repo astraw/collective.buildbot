@@ -4,13 +4,16 @@ import sys
 import os
 from os.path import join
 import shutil
+import virtualenv
 import zc.buildout
 import zc.recipe.egg
+import buildbot.status.web
 from collective.buildbot.recipe import BaseRecipe
-import virtualenv
 
 class Recipe(BaseRecipe):
     """zc.buildout recipe"""
+
+    public_html = os.path.dirname(buildbot.status.web.__file__)
 
     def install(self):
         """Installer"""
@@ -18,11 +21,33 @@ class Recipe(BaseRecipe):
         options = dict([(k, v) for k, v in self.options.items()])
         options.pop('recipe')
 
-
         # creates the dir
         if not os.path.exists(self.location):
             os.mkdir(self.location)
 
+        # static files
+        public_html = os.path.join(self.location, 'public_html')
+        if not os.path.isdir(public_html):
+            os.mkdir(public_html)
+
+        for filename in ('index.html', 'classic.css', 'robots.txt'):
+            if filename == 'classic.css':
+                destination = os.path.join(public_html, 'buildbot.css')
+            else:
+                destination = os.path.join(public_html, filename)
+            shutil.copyfile(os.path.join(self.public_html, filename),
+                            destination)
+            files.append(destination)
+
+        if 'public-html' in options:
+            dirname = options.pop('public-html')
+            for filename in os.listdir(dirname):
+                destination = os.path.join(public_html, filename)
+                shutil.copyfile(os.path.join(dirname, filename), destination)
+                if destination not in files:
+                    files.append(destination)
+
+        # virtual env
         self.create_virtualenv(self.location)
 
         # adds buildbot.tac

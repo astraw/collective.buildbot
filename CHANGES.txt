@@ -1,7 +1,9 @@
 trunk (2008-05-02)
 ==================
 
-  - xxx [Ingeniweb]
+  - allow public_html customization [gawel]
+
+  - add custom about page to link to collective.buildout
 
 0.1.1 (2008-05-02)
 ==================
