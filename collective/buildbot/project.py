@@ -113,18 +113,24 @@ class Project(object):
         raise RuntimeError('No valid bot name in %r' % self.slave_names)
 
     def setStatus(self, c):
-        if not self.email_notification_sender or not self.email_notification_recipients:
+        if not self.email_notification_sender or \
+           not self.email_notification_recipients:
             log.msg('Skiping MailNotifier for project %s: from: %s, to: %s' % (
-                      self.name, self.email_notification_sender, self.email_notification_recipients))
+                      self.name, self.email_notification_sender,
+                      self.email_notification_recipients))
         else:
-            c['status'].append(mail.MailNotifier(builders=self.builders(),
+            try:
+                c['status'].append(mail.MailNotifier(builders=self.builders(),
                            fromaddr=self.email_notification_sender,
                            extraRecipients=self.email_notification_recipients,
                            addLogs=True,
                            relayhost=self.mail_host,
                            mode='failing',
                            sendToInterestedUsers=True))
-
+            except AssertionError:
+                log.msg('Error adding MailNotifier for project %s: from: %s, to: %s' % (
+                        self.name, self.email_notification_sender,
+                        self.email_notification_recipients))
     def __call__(self, c):
         log.msg('Trying to add %s project' % self.name)
         try:

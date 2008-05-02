@@ -69,3 +69,4 @@ class Projects(BaseRecipe):
             files.extend(p.install())
         return files
 
+    update = install

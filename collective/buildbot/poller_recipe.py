@@ -44,9 +44,10 @@ class Pollers(BaseRecipe):
         urls = urls.split('\n')
         urls = [p.strip() for p in urls if p.strip()]
         files = []
-        for url in urls:
+        for i, url in enumerate(urls):
             options['base-url'] = url
-            p = Poller(self.buildout, project, options)
+            p = Poller(self.buildout, 'poller_%i' % i, options)
             files.extend(p.install())
         return files
 
+    update = install
