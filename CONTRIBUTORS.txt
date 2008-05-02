@@ -1,2 +1,15 @@
-Gael Pasgrimaud, Tarek Ziade, Kai Lautaportti, Jean-Francois Roche
+Project initiated at Ingeniweb (http://ingeniweb.com)
+
+Initial Authors:
+    - Gael Pasgrimaud
+    - Tarek Ziade
+
+Move to the collective during the Plone Paris Sprint 2008
+
+Contributors:
+
+- Gael Pasgrimaud
+- Tarek Ziade
+- Kai Lautaportti
+- Jean-Francois Roche
 
