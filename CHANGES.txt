@@ -1,9 +1,13 @@
 trunk (2008-05-02)
 ==================
 
+  - Added irc options so you can attach an irc bot to the master buildbot
+    [mustapha]
+
   - allow public_html customization [gawel]
 
   - add custom about page to link to collective.buildout
+
 
 0.1.1 (2008-05-02)
 ==================

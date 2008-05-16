@@ -24,6 +24,21 @@ url
 build-slaves
     Lists the slaves, with the name and the password for each.
 
+
+Plus these extra options if you need to run an irc bot:
+
+irc-host
+    The irc host to connect to. ie: irc.freenode.net
+
+irc-channels
+    A list of channels to join. #plone
+
+irc-nickname
+    The bot nickname. Defaults to ``buildbot``
+
+irc-password
+    The password used to identify the bot. Defaults to an empty string
+
 Example usage
 =============
 

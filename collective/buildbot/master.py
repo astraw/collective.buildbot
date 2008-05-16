@@ -6,6 +6,7 @@ import os
 from buildbot.process import buildstep, factory
 from buildbot.changes.pb import PBChangeSource
 from buildbot.buildslave import BuildSlave
+from buildbot.status import words
 
 from twisted.python import log
 from collective.buildbot.overrides import WebStatus
@@ -79,8 +80,27 @@ allowForce = False
 if config.has_option('buildbot', 'allow-force'):
     allowForce = config.get('buildbot', 'allow-force') == 'true'
 
-
 c['status'].append(WebStatus(http_port=wport, allowForce=allowForce))
+
+#IRC bot if one need it
+irc_host = irc_channels = irc_nickname = irc_password = '' 
+if config.has_option('buildbot', 'irc-host') and \
+   config.has_option('buildbot', 'irc-channels'):
+    
+    irc_host = config.get('buildbot', 'irc-host')
+    irc_channels = config.get('buildbot', 'irc-channels').split()
+    print irc_channels
+
+    if config.has_option('buildbot', 'irc-nickname'):
+        irc_nickname = config.get('buildbot', 'irc-nickname')
+    else:    
+        irc_nickname = 'buildbot'
+    if config.has_option('buildbot', 'irc-password'):
+        irc_password = config.get('buildbot', 'irc-password')
+
+    irc = words.IRC(irc_host, irc_nickname, irc_channels, password=irc_password)
+    c['status'].append(irc)
+
 ######################################################
 c['slavePortnum'] = port
 c['projectName'] = config.get('buildbot', 'project-name')
