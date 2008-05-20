@@ -74,6 +74,7 @@ scheduler.
     ... email-notification-recipient = dev@my.company.com
     ... build-sequence =
     ... test-sequence = ../../bin/python setup.py test
+    ... periodic-scheduler = 60
     ... """)
 
 We've allowed forced builds which is quite handy sometimes. Since the
@@ -89,9 +90,10 @@ Zope controller script, ``zope-instance`` in this particular case, to
 run the tests.
 
 Also, because the ``another.package`` project uses a Git repository,
-the SVN poller won't apply to it and we would need to either install a
-commit-hook that notifies the buildbot of changes or use a timed
-scheduler to build the project e.g. once a night.
+the SVN poller won't apply to it so we've set up a periodic scheduler
+that builds the project once in an hour. An alternative would be to
+install a post-commit hook to the Git repository that notifies the
+buildout of changes and schedules a build.
 
 The ``my.buildout`` project is a buildout based project, so we can use
 the default ``build-sequence`` which will bootstrap and run the
