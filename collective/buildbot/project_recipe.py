@@ -50,6 +50,7 @@ class Project(BaseRecipe):
     update = install
 
 class Projects(BaseRecipe):
+    """Deprecated"""
 
     def install(self):
         options = dict([(k,v) for k,v in self.options.items()])

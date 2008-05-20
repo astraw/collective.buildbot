@@ -77,6 +77,25 @@ The recipe supports the following options:
   slave to execute the test suite. Defaults to::
 
     bin/test
+
+``periodic-scheduler`` (optional)
+
+  Sets up a periodic scheduler that schedules a build every ``n``
+  minutes, where ``n`` is the given integer value.
+
+``cron-scheduler`` (optional)
+
+  Sets up a cron-like scheduler that schedules a build at a given
+  time. The time is configured in a crontab manner using white space
+  separated values for the following fields::
+
+    [minute] [hour] [day of month] [month] [day of week]
+
+  The values should be integers in the approriate range for the given
+  field or ``*`` (asterisk) for all values. For example to schedule a
+  build at 3:00 am every night you would use::
+
+    cron-scheduler = 0 3 * * *
    
 
 Example usage

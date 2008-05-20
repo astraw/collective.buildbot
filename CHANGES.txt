@@ -29,6 +29,9 @@
   - Fixed bug that prevented the master from starting if there weren't
     any SVN pollers configured. [dokai]
 
+  - Added new options ``periodic-scheduler`` and ``cron-scheduler`` to
+    set up passive schedulers for projects. [dokai]
+
 
 0.1.1 (2008-05-02)
 ==================

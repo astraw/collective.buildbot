@@ -3,7 +3,7 @@ import random
 from os.path import join
 
 from buildbot.scheduler import Scheduler
-from buildbot.scheduler import Nightly
+from buildbot.scheduler import Nightly, Periodic
 from buildbot.process import factory
 from buildbot import steps
 from buildbot.status import mail
@@ -129,27 +129,33 @@ class Project(object):
     def setScheduler(self, c):
         schedulers = []
 
-        scheduler = self.options.get('scheduler', None)
-        if scheduler:
-            schedulers.append(Scheduler(name=self.name,
-                                        branch=self.branch,
-                                        treeStableTimer=2*60,
-                                        builderNames=self.builders()))
+        # Set up a simple periodic scheduler
+        periodic = self.options.get('periodic_scheduler', None)
+        if periodic is not None:
+            try:
+                period = int(str(periodic).strip())
+                if period < 1:
+                    raise ValueError
 
-        hours = self.options.get('hours', None)
-        if hours:
-            minute = random.randint(1, 59)
-            if '*' in hours:
-                values = '*'
-                name = 'Nightly scheduler for %s at *:%s' % (self.name, minute)
-            else:
-                values = [int(v) for v in hours.split(' ') if v]
-                name = 'Nightly scheduler for %s at %s' % (self.name,
-                              ' '.join(['%s:%s' % (v, minute) for v in values]))
-            schedulers.append(Nightly(name,
-                                      self.builders(),
-                                      hour=values,
-                                      minute=minute))
+                name = 'Periodic scheduler for %s' % self.name
+                schedulers.append(Periodic(name, self.builders(), period * 60))
+            except (TypeError, ValueError):
+                log.msg('Invalid period for periodic scheduler: %s' % period)
+                raise
+
+
+        # Set up a cron-like scheduler
+        cron = self.options.get('cron_scheduler', None)
+        if cron is not None:
+            try:
+                minute, hour, dom, month, dow = [v=='*' and v or int(v) for v in cron.split()[:5]]
+                name = 'Cron scheduler for %s' % self.name
+                schedulers.append(Nightly(
+                        name, self.builders(), minute, hour, dom, month, dow))
+                        
+            except (IndexError, ValueError, TypeError):
+                log.msg('Invalid cron definition for the cron scheduler: %s' % cron)
+                raise ValueError
 
         log.msg('Adding schedulers for %s: %s' % (self.name, schedulers))
 
