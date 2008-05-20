@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 """Recipe buildmaster"""
 import os
-from os.path import join
 import shutil
 import zc.buildout
 import buildbot.status.web
+import zc.recipe.egg
+
+from os.path import join
 from collective.buildbot.recipe import BaseRecipe
 
 class Recipe(BaseRecipe):

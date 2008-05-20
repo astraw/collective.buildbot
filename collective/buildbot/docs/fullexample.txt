@@ -1,5 +1,5 @@
-Putting it together
-*******************
+Putting it all together
+***********************
 
 Below we will demonstrate how to put all the pieces together to create
 a buildbot environment for your own projects. We will use two separate
@@ -11,9 +11,9 @@ a different python version.
 We'll start with the build master buildout that defines the build
 master process and all the projects that we wish to build and test. We
 also include a poller configuration that will poll the Subversion
-repository for changes and execute the build when changes have
-occurred. If we were to use another version control system, such as
-Git, we would need to use a commit-hook or a time-based build
+repository for changes the projects and execute the build when changes
+have occurred. If we were to use another version control system, such
+as Git, we would need to use a commit-hook or a time-based build
 scheduler.
 
     >>> write('buildout.cfg',
@@ -24,6 +24,7 @@ scheduler.
     ...     svnpoller
     ...     my.project
     ...     my.buildout
+    ...     another.package
     ... 
     ... [buildmaster]
     ... recipe = collective.buildbot:master
@@ -38,9 +39,129 @@ scheduler.
     ...     slave1 secretpassword
     ... 
     ... [svnpoller]
+    ... recipe = collective.buildbot:pollers
+    ... repositories =
+    ...     ${my.project:repository}
+    ...     ${my.buildout:repository}
+    ... user = someuser
+    ... password = anothersecret
+    ... 
+    ... [my.project]
+    ... recipe = collective.buildbot:project
+    ... slave-names = slave1
+    ... repository = https://svn.company.com/svn/my.project/trunk
+    ... build-sequence =
+    ... test-sequence = ../../bin/python setup.py test
+    ... 
+    ... [my.buildout]
+    ... recipe = collective.buildbot:project
+    ... slave-names = slave1
+    ... repository = https://svn.company.com/svn/my.buildout/trunk
+    ... test-sequence = bin/test -v --exit-with-status
+    ... 
+    ... [another.package]
+    ... recipe = collective.buildbot:project
+    ... slave-names = slave1
+    ... vcs = git
+    ... repository = git://git.company.com/projects/another-package.git
+    ... build-sequence =
+    ... test-sequence = ../../bin/python setup.py test
     ... """)
 
 We've allowed forced builds which is quite handy sometimes. Since the
 default buildbot web interface is not the most aesthetic we've also
 included a directory that contains our custom css.
 
+The ``my.project`` and ``another.package`` packages are simple python
+packages so we use the setup.py script to run the test suites. Because
+these are simple packages we also clear out the ``build-sequence``
+option since there is nothing to do before running the tests.
+
+Also, because the ``another.package`` project uses a Git repository,
+the SVN poller won't apply to it and we would need to either install a
+commit-hook that notifies the buildbot of changes or use a timed
+scheduler to build the project e.g. once a night.
+
+The ``my.buildout`` project is a buildout based project, so we can use
+the default ``build-sequence`` which will bootstrap and run the
+buildout for us. For the zope.testing test runner we pass the
+``--exit-with-status`` parameter so that buildbot will know whether
+the tests failed or not. The trunk may have additional svn:externals
+defined that actually pull in the code that is tested which is the
+common place.
+
+Let's run the buildout now.
+
+    >>> mkdir('buildbot_css')
+    >>> print system(buildout)
+    Installing buildmaster.
+    New python executable in /sample-buildout/parts/buildmaster/bin/python
+    Installing setuptools............done.
+    Generated script '/sample-buildout/parts/buildmaster/buildbot.tac'.
+    Generated config '/sample-buildout/parts/buildmaster/buildbot.cfg'.
+    Generated script '/sample-buildout/bin/buildmaster'.
+    Installing my.project.
+    Generated config '/sample-buildout/parts/projects/my.project.cfg'.
+    Installing my.buildout.
+    Generated config '/sample-buildout/parts/projects/my.buildout.cfg'.
+    Installing svnpoller.
+    Generated config '/sample-buildout/parts/pollers/poller_0.cfg'.
+    Generated config '/sample-buildout/parts/pollers/poller_1.cfg'.
+    Installing another.package.
+    Generated config '/sample-buildout/parts/projects/another.package.cfg'.
+    <BLANKLINE>
+
+As we can see we got the ``bin/buildmaster`` script to run the build
+master process and the corresponding configuration files. Our build
+master is now ready and you can start it by running::
+
+  $ ./bin/buildmaster start
+
+Next, we create the buildout for the build slave. This buildout may be
+located on a different machine although having it on the same machine
+will work just as fine.
+
+    >>> write('buildout.cfg',
+    ... """
+    ... [buildout]
+    ... parts = 
+    ...	   buildslave
+    ... 
+    ... [buildslave]
+    ... recipe = collective.buildbot:slave
+    ... host = buildbot.my.company.com
+    ... port = 8080
+    ... password = secretpassword
+    ... """)
+
+The slave buildout is very simple since the build master is in charge
+of everything and the slave simply needs to contact the master and
+receive instructions. We confifured the address of the build master
+and the password to match the configuration in the build master
+buildout above.
+
+Running the buildout will give us the controller script::
+
+    >>> print system(buildout)
+    Uninstalling...
+    Installing buildslave.
+    New python executable in /sample-buildout/parts/buildslave/bin/python
+    Installing setuptools............done.
+    Generated script /sample-buildout/parts/buildslave/buildbot.tac.
+    Generated script '/sample-buildout/bin/buildslave'.
+    <BLANKLINE>
+
+The build slave can be started by running::
+
+  $ ./bin/buildslave start
+
+Once you have both the build master and slave running the poller
+should react to commits to the SVN repositories and run the builds
+after each change. You can view the buildbot status pages at the
+configured address, http://buildbot.my.company.com:8082/ in this
+case. You can use the web interface to force a build which can be
+useful to verify that the buildbot and projects are configured
+correctly.
+
+It is now easy to add new projects or build slaves by modifying the
+buildout configurations and rerunning the buildouts.

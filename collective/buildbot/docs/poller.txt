@@ -36,6 +36,11 @@ The recipe supports the following options:
 
   Interval in seconds to check for changes.
 
+``svn-binary``
+
+  Path to the ``svn`` binary. Defaults to ``svn`` which should work if
+  you have in your ``PATH``.
+
 Example usage
 =============
 
@@ -48,7 +53,7 @@ We can define a poller to make our buildbot aware of commits::
     ... 
     ... [svnpoller]
     ... recipe = collective.buildbot:poller
-    ... base-url = http://example.com/svn/buildout
+    ... repository = http://example.com/svn/buildout/trunk
     ... user = h4x0r
     ... password = passwd
     ... """)
@@ -62,7 +67,7 @@ Poller generation. You can see here all the available options::
     >>> cat(join('parts', 'pollers', 'svnpoller.cfg'))
     [poller]
     hist-max = 100
-    base-url = http://example.com/svn/buildout
+    repository = http://example.com/svn/buildout/trunk
     vcs = svn
     user = h4x0r
     svn-binary = svn
@@ -81,7 +86,7 @@ it allows you to define multiple pollers in one buildout section.
 Supported options
 =================
 
-Options are the same than the project except that ``repository`` is
+The options are otherwise the same except that ``repository`` is
 replaced by ``repositories``.
 
 ``repositories``

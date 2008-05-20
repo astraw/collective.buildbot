@@ -28,6 +28,8 @@ long_description = (
     + '\n' +
     read('collective', 'buildbot', 'docs', 'poller.txt')
     + '\n' +
+    read('collective', 'buildbot', 'docs', 'fullexample.txt')
+    + '\n' +
     'Contributors\n'
     '************\n'
     + '\n' +
