@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Recipe devserver"""
 import os
-from os.path import join
+from os.path import join, exists
 import zc.buildout
 import zc.recipe.egg
 from collective.buildbot.recipe import BaseRecipe
@@ -29,6 +29,11 @@ class Recipe(BaseRecipe):
         filename = join(location, 'buildbot.tac')
         open(filename, 'w').write(template)
         self.log('Generated script %s.' % filename)
+
+        # Create an empty log file if necessary to avoid the error
+        # message on first run.
+        if not exists(join(location, 'twistd.log')):
+            open(join(location, 'twistd.log'), 'w').write('')
 
         buildbot_cfg = join(location, 'buildbot.tac')
         options = {'eggs':'collective.buildbot',

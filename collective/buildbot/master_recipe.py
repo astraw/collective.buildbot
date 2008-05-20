@@ -59,6 +59,12 @@ class Recipe(BaseRecipe):
         self.log('Generated script %r.' % buildbot_tac)
         files.append(buildbot_tac)
 
+        # Create an empty log file if necessary to avoid the error
+        # message on first run.
+        if not os.path.exists(os.path.join(self.location, 'twistd.log')):
+            open(os.path.join(self.location, 'twistd.log'), 'w').write('')
+
+
         # generates the buildbot.cfg file
         slaves = options.pop('slaves')
         slaves = dict([slave.split()[:2]

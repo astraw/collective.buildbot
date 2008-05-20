@@ -52,16 +52,17 @@ c['slaves'] = [BuildSlave(name, password, max_builds=max_builds,
 for name, klass in (('project', Project), ('poller', Poller)):
     files = dict()
     dirname = config.get('buildbot', '%ss-directory' % name)
-    for filename in os.listdir(dirname):
-        if filename.endswith('.cfg'):
-            filename = os.path.join(dirname, filename)
-            pconf = ConfigParser()
-            pconf.read(filename)
+    if os.path.isdir(dirname):
+        for filename in os.listdir(dirname):
+            if filename.endswith('.cfg'):
+                filename = os.path.join(dirname, filename)
+                pconf = ConfigParser()
+                pconf.read(filename)
 
-            kwargs = dict([(key.replace('-', '_'), value)
-                                for key, value
-                                in pconf.items(name)])
-            klass(**kwargs)(c)
+                kwargs = dict([(key.replace('-', '_'), value)
+                                    for key, value
+                                    in pconf.items(name)])
+                klass(**kwargs)(c)
 
 projects_dir = config.get('buildbot', 'projects-directory')
 files = []
