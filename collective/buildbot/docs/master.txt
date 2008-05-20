@@ -45,19 +45,19 @@ The recipe supports the following options:
     images) for the web interface.
 
 
+Additionally you can use the following options if you need to run an
+IRC bot:
 
-Plus these extra options if you need to run an irc bot:
-
-irc-host
+``irc-host``
     The irc host to connect to. ie: irc.freenode.net
 
-irc-channels
+``irc-channels``
     A list of channels to join. #plone
 
-irc-nickname
+``irc-nickname``
     The bot nickname. Defaults to ``buildbot``
 
-irc-password
+``irc-password``
     The password used to identify the bot. Defaults to an empty string
 
 Example usage
