@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
 """Recipe devserver"""
-import sys
 import os
-import glob
-import shutil
 from os.path import join
 import zc.buildout
 import zc.recipe.egg
 from collective.buildbot.recipe import BaseRecipe
-import virtualenv
 
 class Recipe(BaseRecipe):
     """zc.buildout recipe"""

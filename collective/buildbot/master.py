@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
-import datetime
-import time
 import os.path
-import os
-from buildbot.process import buildstep, factory
+from buildbot.process import factory
 from buildbot.changes.pb import PBChangeSource
 from buildbot.buildslave import BuildSlave
 from buildbot.status import words
 
-from twisted.python import log
 from collective.buildbot.overrides import WebStatus
 from collective.buildbot.project import Project
 from collective.buildbot.poller import Poller

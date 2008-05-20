@@ -3,7 +3,6 @@ import random
 from os.path import join
 
 from buildbot.scheduler import Scheduler
-from buildbot.scheduler import Periodic
 from buildbot.scheduler import Nightly
 from buildbot.process import factory
 from buildbot import steps

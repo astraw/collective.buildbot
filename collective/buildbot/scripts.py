@@ -2,7 +2,6 @@
 import os
 import sys
 import buildbot.scripts.runner
-import collective.buildbot
 
 def main(location, config_file):
     if config_file:
