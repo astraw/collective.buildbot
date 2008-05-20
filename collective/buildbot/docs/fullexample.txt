@@ -63,7 +63,7 @@ scheduler.
     ... repository = https://svn.company.com/svn/my.buildout/trunk
     ... email-notification-sender = buildbot@my.company.com
     ... email-notification-recipient = dev@my.company.com
-    ... test-sequence = bin/test -v --exit-with-status
+    ... test-sequence = bin/zope-instance test -v -vv
     ... 
     ... [another.package]
     ... recipe = collective.buildbot:project
@@ -83,7 +83,10 @@ included a directory that contains our custom css.
 The ``my.project`` and ``another.package`` packages are simple python
 packages so we use the setup.py script to run the test suites. Because
 these are simple packages we also clear out the ``build-sequence``
-option since there is nothing to do before running the tests.
+option since there is nothing to do before running the tests. The
+``my.buildout`` section is your typical Zope buildout and uses the
+Zope controller script, ``zope-instance`` in this particular case, to
+run the tests.
 
 Also, because the ``another.package`` project uses a Git repository,
 the SVN poller won't apply to it and we would need to either install a
