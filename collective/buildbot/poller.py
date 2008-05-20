@@ -1,16 +1,6 @@
-import os
-import sys
-import time
-import urlparse
-import os.path
-import datetime
-from glob import glob
-from os.path import join
-
 from buildbot.changes import svnpoller
 from twisted.python import log
 
-from collective.buildbot.utils import split_option
 
 def split_file(path):
     parts = path.split('/')
@@ -35,13 +25,13 @@ class Poller(object):
     def setSVNPoller(self, c):
         """Configure the poller for the project."""
         log.msg('Adding poller to project %s' % self.name)
-        svnurl = self.options.get('base_url')
+        svnurl = self.options.get('repository')
         options = dict(
-                pollinterval=int(self.options.get('poll_interval', 600)),
-                svnuser=self.options.get('user', None),
-                svnpasswd=self.options.get('password', None),
-                svnbin=self.options.get('svn_binary', 'svn'),
-                split_file=split_file)
+            pollinterval=int(self.options.get('poll_interval', 600)),
+            svnuser=self.options.get('user', None),
+            svnpasswd=self.options.get('password', None),
+            svnbin=self.options.get('svn_binary', 'svn'),
+            split_file=split_file)
 
         c['change_source'].append(svnpoller.SVNPoller(svnurl, **options))
 
