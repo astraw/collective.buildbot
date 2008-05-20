@@ -4,7 +4,6 @@ import sys
 import glob
 import shutil
 import virtualenv
-import zc.recipe.egg
 from os.path import join
 from ConfigParser import ConfigParser
 
