@@ -1,10 +1,5 @@
 import os
-import sys
-import time
-import urlparse
 import random
-import datetime
-from glob import glob
 from os.path import join
 
 from buildbot.scheduler import Scheduler
@@ -12,10 +7,7 @@ from buildbot.scheduler import Periodic
 from buildbot.scheduler import Nightly
 from buildbot.process import factory
 from buildbot import steps
-from buildbot.status import html
 from buildbot.status import mail
-from buildbot.changes.pb import PBChangeSource
-from buildbot.changes import svnpoller
 from twisted.python import log
 
 from collective.buildbot.utils import split_option
@@ -36,15 +28,12 @@ class Project(object):
 
     We need to test args::
 
-        >>> project = Project(base_url='https://ingeniweb.svn.sourceforge.net/svnroot/ingeniweb/collective.buildbot',
+        >>> project = Project(repository='https://ingeniweb.svn.sourceforge.net/svnroot/ingeniweb/collective.buildbot/trunk',
         ...                   email_notification_sender='gael@ingeniweb.com',
         ...                   email_notification_recipients='gael@ingeniweb.com')
 
-        >>> print project.baseURL
-        https://ingeniweb.svn.sourceforge.net
-
         >>> print project.repository
-        /svnroot/ingeniweb/collective.buildbot
+        https://ingeniweb.svn.sourceforge.net/svnroot/ingeniweb/collective.buildbot/trunk
 
         >>> print project.email_notification_sender
         gael@ingeniweb.com
@@ -53,13 +42,13 @@ class Project(object):
 
     We can have multiple recipients::
 
-        >>> project = Project(base_url='https://ingeniweb.svn.sourceforge.net/svnroot/ingeniweb/collective.buildbot',
+        >>> project = Project(repository='https://ingeniweb.svn.sourceforge.net/svnroot/ingeniweb/collective.buildbot/trunk',
         ...                   email_notification_sender='gael@ingeniweb.com',
         ...                   email_notification_recipients='gael@ingeniweb.com buildout@ingeniweb.com')
         >>> print project.email_notification_recipients
         ['gael@ingeniweb.com', 'buildout@ingeniweb.com']
 
-        >>> project = Project(base_url='https://ingeniweb.svn.sourceforge.net/svnroot/ingeniweb/collective.buildbot',
+        >>> project = Project(repository='https://ingeniweb.svn.sourceforge.net/svnroot/ingeniweb/collective.buildbot/trunk',
         ...                   email_notification_sender='gael@ingeniweb.com',
         ...                   email_notification_recipients='''gael@ingeniweb.com
         ...                                                 buildout@ingeniweb.com''')
@@ -72,10 +61,9 @@ class Project(object):
 
         self.mail_host = options.get('mail_host', 'localhost')
         self.email_notification_sender = options.get('email_notification_sender','').strip()
-        self.email_notification_recipients = split_option(options,
-                                                          'email_notification_recipients')
+        self.email_notification_recipients = options.get('email_notification_recipients', '').split()
 
-        self.slave_names =  split_option(options, 'slave_names')
+        self.slave_names =  options.get('slave_names', '').split()
         self.vcs = options.get('vcs', 'svn')
 
         self.build_sequence = split_option(options, 'build_sequence')
@@ -87,23 +75,13 @@ class Project(object):
         if not self.test_sequence:
             self.test_sequence = [join('bin', 'test')]
 
-        base_url = options.get('base_url')
-        repository = options.get('repository', '')
-        if repository:
-            self.baseURL = base_url
-            self.repository = repository
-        else:
-            scheme, host, self.repository = urlparse.urlparse(base_url)[:3]
-            if scheme not in ('file', 'svn', 'http', 'https'):
-                raise ValueError('Invalid url scheme %s: %s' % (scheme, base_url))
-            self.baseURL = base_url.replace(self.repository, '')
+        self.repository = options.get('repository', '')
         self.branch = options.get('branch', '')
-
         self.options = options
 
     def executable(self):
         """returns python bin"""
-        return '..%(sep)s..%(sep)sbin%(sep)spython' % dict(sep=os.sep)
+        return os.sep.join(['..', '..', 'bin', 'python'])
 
     def checkBot(self, c):
         slave_names = [b.slavename for b in c['slaves']]
@@ -115,22 +93,24 @@ class Project(object):
     def setStatus(self, c):
         if not self.email_notification_sender or \
            not self.email_notification_recipients:
-            log.msg('Skiping MailNotifier for project %s: from: %s, to: %s' % (
+            log.msg('Skipping MailNotifier for project %s: from: %s, to: %s' % (
                       self.name, self.email_notification_sender,
                       self.email_notification_recipients))
         else:
             try:
-                c['status'].append(mail.MailNotifier(builders=self.builders(),
-                           fromaddr=self.email_notification_sender,
-                           extraRecipients=self.email_notification_recipients,
-                           addLogs=True,
-                           relayhost=self.mail_host,
-                           mode='failing',
-                           sendToInterestedUsers=True))
+                c['status'].append(mail.MailNotifier(
+                        builders=self.builders(),
+                        fromaddr=self.email_notification_sender,
+                        extraRecipients=self.email_notification_recipients,
+                        addLogs=True,
+                        relayhost=self.mail_host,
+                        mode='failing',
+                        sendToInterestedUsers=True))
             except AssertionError:
                 log.msg('Error adding MailNotifier for project %s: from: %s, to: %s' % (
                         self.name, self.email_notification_sender,
                         self.email_notification_recipients))
+
     def __call__(self, c):
         log.msg('Trying to add %s project' % self.name)
         try:
@@ -183,17 +163,16 @@ class Project(object):
         executable = self.executable()
 
         if self.vcs == 'svn':
-            svnserver = self.baseURL + self.repository
-
-            update_sequence = [s(steps.source.SVN, mode="update",
-                                 baseURL=svnserver, defaultBranch=self.branch)]
+            update_sequence = [s(steps.source.SVN, mode="update", svnurl=self.repository)]
         elif self.vcs in  ('hg', 'bzr'):
             if self.vcs == 'hg':
                 klass = steps.source.Mercurial
             else:
                 klass = steps.source.Bzr
-
             update_sequence = [s(klass, mode="update", repourl=self.repository)]
+        elif self.vcs == 'git':
+            update_sequence = [s(steps.source.Git, mode='update',
+                                 repourl=self.repository, branch=self.branch)]
         else:
             raise NotImplementedError('%s not supported yet' % self.vcs)
 
