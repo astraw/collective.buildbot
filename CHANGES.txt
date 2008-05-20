@@ -1,4 +1,4 @@
-0.2 (unreleased)
+0.2.0 (unreleased)
 ==================
 
   - Added irc options so you can attach an irc bot to the master buildbot
@@ -21,6 +21,8 @@
   - Cleaned up a lot of redundant imports. [dokai]
 
   - Updated the documentation and examples. [dokai]
+
+  - Deprecated the collective.buildbot:projects recipe [dokai]
 
 
 0.1.1 (2008-05-02)
