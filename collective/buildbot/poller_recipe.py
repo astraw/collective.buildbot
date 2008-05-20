@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
-import sys
-import os
-import urlparse
-from os.path import join
-from collective.buildbot.recipe import BaseRecipe
 
+from collective.buildbot.recipe import BaseRecipe
 
 class Poller(BaseRecipe):
 
@@ -20,7 +16,7 @@ class Poller(BaseRecipe):
             globs[key] = value
 
         for k, v in (('vcs', 'svn'),
-                     ('base-url', ''),
+                     ('repository', ''),
                      ('poll-interval', '60'),
                      ('poll-interval', '60'),
                      ('hist-max', '100'),
@@ -40,12 +36,12 @@ class Pollers(BaseRecipe):
 
     def install(self):
         options = dict([(k,v) for k,v in self.options.items()])
-        urls = options.pop('base-urls')
-        urls = urls.split('\n')
+        urls = options.pop('repositories')
+        urls = urls.splitlines()
         urls = [p.strip() for p in urls if p.strip()]
         files = []
         for i, url in enumerate(urls):
-            options['base-url'] = url
+            options['repository'] = url
             p = Poller(self.buildout, 'poller_%i' % i, options)
             files.extend(p.install())
         return files

@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 """Recipe buildmaster"""
-import sys
 import os
 from os.path import join
 import shutil
-import virtualenv
 import zc.buildout
-import zc.recipe.egg
 import buildbot.status.web
 from collective.buildbot.recipe import BaseRecipe
 
@@ -62,9 +59,9 @@ class Recipe(BaseRecipe):
 
         # generates the buildbot.cfg file
         slaves = options.pop('slaves')
-        slaves = dict([(slave.split()[0], slave.split()[1])
-                  for slave in slaves.split('\n')
-                  if slave.strip() != ''])
+        slaves = dict([slave.split()[:2]
+                       for slave in slaves.splitlines()
+                       if slave.strip() != ''])
 
         parts_directory = join(self.buildout['buildout']['parts-directory'])
         for k in ( 'projects', 'pollers'):

@@ -1,7 +1,6 @@
 from buildbot.changes import svnpoller
 from twisted.python import log
 
-
 def split_file(path):
     parts = path.split('/')
     if len(parts) < 2:
@@ -30,8 +29,8 @@ class Poller(object):
             pollinterval=int(self.options.get('poll_interval', 600)),
             svnuser=self.options.get('user', None),
             svnpasswd=self.options.get('password', None),
-            svnbin=self.options.get('svn_binary', 'svn'),
-            split_file=split_file)
+            svnbin=self.options.get('svn_binary', 'svn'))
+        #split_file=split_file)
 
         c['change_source'].append(svnpoller.SVNPoller(svnurl, **options))
 

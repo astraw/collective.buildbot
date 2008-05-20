@@ -1,0 +1,46 @@
+Putting it together
+*******************
+
+Below we will demonstrate how to put all the pieces together to create
+a buildbot environment for your own projects. We will use two separate
+buildouts: one for the build master and one for a single build
+slave. For your own projects you may choose to use multiple build
+slaves with each running, for example, on a different architecture or
+a different python version.
+
+We'll start with the build master buildout that defines the build
+master process and all the projects that we wish to build and test. We
+also include a poller configuration that will poll the Subversion
+repository for changes and execute the build when changes have
+occurred. If we were to use another version control system, such as
+Git, we would need to use a commit-hook or a time-based build
+scheduler.
+
+    >>> write('buildout.cfg',
+    ... """
+    ... [buildout]
+    ... parts =
+    ...     buildmaster
+    ...     svnpoller
+    ...     my.project
+    ...     my.buildout
+    ... 
+    ... [buildmaster]
+    ... recipe = collective.buildbot:master
+    ... port = 8080
+    ... wport = 8082
+    ... project-name = The company buildout
+    ... project-url = http://my.company.com
+    ... url = http://buildbot.my.company.com
+    ... allow-force = true
+    ... public-html = ${buildout:directory}/buildbot_css
+    ... slaves = 
+    ...     slave1 secretpassword
+    ... 
+    ... [svnpoller]
+    ... """)
+
+We've allowed forced builds which is quite handy sometimes. Since the
+default buildbot web interface is not the most aesthetic we've also
+included a directory that contains our custom css.
+

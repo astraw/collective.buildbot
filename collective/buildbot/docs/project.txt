@@ -1,57 +1,91 @@
 The project recipe
 ******************
 
+The ``collective.buildbot:project`` recipe is responsible for creating
+the buildbot configuration for a project which is a single testable
+component. Whether this project corresponds to a single sofware
+package or many is up to you. In most cases a project corresponds to a
+buildout which in turn may contain one or many software packages. Each
+project has a separate state and is visualized as a column in the
+waterfall display.
+
+This recipe should be used in the same buildout with
+``collective.buildbot:master``.
+
+
 Supported options
 =================
 
 The recipe supports the following options:
 
-    Lists the projects the buildbot deal with (one project=one column) The
-    values must be a section name in the configuration file.  Then each of this
-    section must contain:
-    
-slave-names
+``slave-names`` (mandatory)
 
-  A list of slaves name to use for the project.
+  A white-space separated list of slave names that the project will be
+  built on. These must correspond to the section names that use the
+  ``collective.buildbot:slave`` recipe and that are consequently
+  referred in the ``slaves`` option of the section using the
+  ``collective.buildbot:master`` recipe.
 
-base-url
+``vcs`` (optional)
 
-  Base url for the repository.
+  The version control system used to obtain the source code for the
+  project. Defaults to ``svn``. Other possible values are: ``hg``,
+  ``bzr`` and ``git``.
 
-branch
+``repository`` (mandatory)
 
-  Last part of the url. Default to 'trunk'. Not used if you provide a base url
-  ended with 'trunk'.
+  The URL to the code repository that corresponds to the selected
+  version control system. For Subversion this could be something like
+  ``https://svn.plone.org/svn/collective/collective.buildbot/trunk``
+  or for Git something like
+  ``git@github.com:dokai/hexagonit-swfheader.git``.
 
-email-notification-sender
+``branch`` (optional)
 
-  An email to send mail with.
+  The branch in the version control system that will be checked
+  out. For Subversion checkouts you should provide the full URL to the
+  desired branch (e.g. something that ends with ``trunk`` or
+  ``branches/foo``) and leave this option empty. For Git repositories
+  the default value is ``master``.
 
-email-notification-recipients
+``email-notification-sender`` (optional)
 
-  A set of lines with emails to send mail to.
+  An email address that will be used in the From: header for the
+  notification messages.
 
-build-sequence
+``email-notification-recipients`` (optional)
 
-  The sequence of shell
-  commands to build the project.
-  Defaults to:
-  
-  - bin/python boostrap.py
-  - bin/buildout
+  A newline separated sequence of email addresses the notification
+  messages will be sent to.
 
-test-sequence
+``build-sequence`` (optional)
 
-  The sequence of shell commands that are run to test the project.
-  Defaults to 'bin/test'
-    
-The buildbot will use base-url/project/branch to get the full url to
-be retrieved for the checkout.
+  A newline separated sequence of shell commands executed on the build
+  slave after checking out the code from the repository that will
+  build the project.
+
+  Defaults to::
+
+    bin/python bootstrap.py
+    bin/buildout
+
+  which is appropriate for buildout based projects.
+
+``test-sequence`` (optional)
+
+  A newline separated sequence of shell commands executed on the build
+  slave to execute the test suite. Defaults to::
+
+    bin/test
+   
 
 Example usage
 =============
 
-We'll start by creating a buildout that uses the recipe::
+We'll start by creating a buildout that uses the recipe. A full
+example would propably have other sections defining the build master
+and slaves, but here we will demonstrate only the use of the
+``collective.buildbot:project`` recipe.
 
     >>> write('buildout.cfg',
     ... """
@@ -61,11 +95,9 @@ We'll start by creating a buildout that uses the recipe::
     ... [my.package]
     ... recipe = collective.buildbot:project
     ... slave-names = slave1
-    ... base-url = http://example.com/svn/ 
-    ...
+    ... vcs = svn
+    ... repository = http://example.com/svn/my.package/trunk
     ... """)
-
-This will test the package located at `http://example.com/svn/my.package/trunk`
 
 Running the buildout gives us::
 
@@ -73,17 +105,18 @@ Running the buildout gives us::
     Installing my.package.
     Generated config '/sample-buildout/parts/projects/my.package.cfg'.
 
-This will generate a config file for each project::
+As we can see, the recipe generated the project configuration file
+under the ``projects`` directory in the parts::
 
     >>> cat(join('parts', 'projects', 'my.package.cfg'))
     [project]
     ...
     name = my.package
+    repository = http://example.com/svn/my.package/trunk
     ...
     slave-names = slave1
     ...
-    branch = my.package/trunk
-    base-url = http://example.com/svn/
+    vcs = svn
     <BLANKLINE>
 
 Email notification::
@@ -96,13 +129,15 @@ Email notification::
     ... [my.package]
     ... recipe = collective.buildbot:project
     ... slave-names = slave1
+    ... vcs = svn
     ... email-notification-sender = foo@bar.com
     ... email-notification-recipient =
     ...     bar@foo.com
     ...     buildbot@foo.com
-    ... base-url = http://example.com/svn/ 
+    ... repository = http://example.com/svn/my.package/trunk
     ...
     ... """)
+
 
 The projects recipe
 *******************

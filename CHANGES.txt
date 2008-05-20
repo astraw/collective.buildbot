@@ -1,12 +1,26 @@
-trunk (2008-05-02)
+0.2 (unreleased)
 ==================
 
   - Added irc options so you can attach an irc bot to the master buildbot
     [mustapha]
 
-  - allow public_html customization [gawel]
+  - Allow public_html customization [gawel]
 
-  - add custom about page to link to collective.buildout
+  - Added custom about page to link to collective.buildout [gawel]
+
+  - Added support for Git repositories [dokai]
+
+  - Refactored the repository URL configuration. For Subversion, you
+    should use only the ``repository`` option to specify a full URL to
+    the desired branch (trunk, tag or branch) that will be built. For
+    Git in addition to setting the ``repository`` option you can use
+    the ``branch`` option to specify a specific branch to build. By
+    default the ``master`` branch will be used for Git
+    repositories. [dokai]
+
+  - Cleaned up a lot of redundant imports. [dokai]
+
+  - Updated the documentation and examples. [dokai]
 
 
 0.1.1 (2008-05-02)

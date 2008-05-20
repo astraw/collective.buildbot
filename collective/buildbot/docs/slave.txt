@@ -1,19 +1,34 @@
-The slave recipe
-****************
+The build slave recipe
+**********************
+
+The ``collective.buildbot:slave`` recipe produces a configuration
+file that sets up a build slave process. Once the build slave is
+configured you can run it by executing the controller script under the
+buildout's bin directory. The controller script will be named after
+the section name, so if you had a ``[buildslave]`` section in your
+buildout.cfg you would get a ``bin/buildslave`` script.
+
+Since the name of the section using this recipe will also become the
+name of the build slave it is important to choose the name that
+corresponds to the buildmaster configuration.
 
 Supported options
 =================
 
 The recipe supports the following options:
 
-host
-    Host of the buildmaster.
+``host``
+    Hostname of the build master.
     
-port
-    Port on which the buildmaster listens.
+``port``
+    Port that the build master is listening. This should match the
+    ``port`` option in the section using the
+    ``collective.buildbot:master`` recipe in your buildmaster
+    buildout.
 
-password
-    Sets the password for the buildbot.
+``password``
+    Build slave password. This should match the password in the
+    ``slave-names`` section in the buildmaster buildout.
 
 Example usage
 =============
@@ -42,4 +57,7 @@ Running the buildout gives us::
     Generated script '/sample-buildout/bin/buildslave'.
     <BLANKLINE>
 
+As shown above, the buildout generated the required scripts. You can
+control build slave process by running::
 
+  $ ./bin/buildslave [start | stop | restart]

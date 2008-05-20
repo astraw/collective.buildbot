@@ -1,4 +1,4 @@
-The project recipe
+The poller recipe
 ******************
 
 Supported options
@@ -10,29 +10,31 @@ The recipe supports the following options:
     values must be a section name in the configuration file.  Then each of this
     section must contain:
     
-vcs
+``vcs``
 
-  Default to svn
+  The version control system. Defaults to ``svn``. Currently only
+  Subversion repositories are supported.
 
-base-url
+``repository``
 
-  Root url for the repository.
+  Full URL to the branch in the code repository containing the project
+  code.
 
-hist-max
+``hist-max``
 
   Number of history lines to look at (Default 100).
 
-user
+``user``
 
   A svn user (Default None).
 
-password
+``password``
 
   A valid svn password for the user (Default None).
 
-poll-interval
+``poll-interval``
 
-  Interval in second to check for changes.
+  Interval in seconds to check for changes.
 
 Example usage
 =============
@@ -72,13 +74,18 @@ Poller generation. You can see here all the available options::
 The pollers recipe
 *******************
 
+The ``collective.buildbot:pollers`` is similar to the
+``collective.buildbot:poller`` recipe and the only difference is that
+it allows you to define multiple pollers in one buildout section.
+
 Supported options
 =================
 
-Options are the same than the project except one.
+Options are the same than the project except that ``repository`` is
+replaced by ``repositories``.
 
-base-urls
+``repositories``
 
-  A list of repository urls to look for.
+  A sequence of white space separated repository URLs to poll.
 
   

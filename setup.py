@@ -50,7 +50,7 @@ tests_require=['zope.testing', 'zc.buildout']
 
 setup(name='collective.buildbot',
       version=version,
-      description="A set of zc.buildout recipe and package to easy install buildbot",
+      description="A set of zc.buildout recipes and package to easy install buildbot",
       long_description=long_description,
       # Get more strings from http://www.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[

@@ -52,7 +52,7 @@ class Projects(BaseRecipe):
     def install(self):
         options = dict([(k,v) for k,v in self.options.items()])
         projects = options.pop('projects')
-        projects = projects.split('\n')
+        projects = projects.splitlines()
         projects = [p.strip() for p in projects if p.strip()]
         base_url = options.pop('base-url')
         if 'branch' in options:

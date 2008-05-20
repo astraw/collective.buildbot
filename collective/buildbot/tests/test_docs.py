@@ -4,12 +4,12 @@ Doctest runner for 'collective.buildbot'.
 """
 __docformat__ = 'restructuredtext'
 
-import os
 from os.path import join
 import unittest
 import zc.buildout.testing
 
 from zope.testing import doctest, renormalizing
+from collective.buildbot import project
 
 optionflags =  (doctest.ELLIPSIS |
                 doctest.NORMALIZE_WHITESPACE |
@@ -52,6 +52,7 @@ def test_suite():
                         ]),
                 )
             for filename in test_files])
+    suite.addTest(doctest.DocTestSuite(project))
     return suite
 
 if __name__ == '__main__':
