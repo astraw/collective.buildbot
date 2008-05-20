@@ -67,9 +67,6 @@ class Project(object):
         self.vcs = options.get('vcs', 'svn')
 
         self.build_sequence = split_option(options, 'build_sequence')
-        if not self.build_sequence:
-            self.build_sequence = [join(self.executable(), 'bootstrap.py'),
-                                   join('bin', 'buildout')]
 
         self.test_sequence = split_option(options, 'test_sequence')
         if not self.test_sequence:

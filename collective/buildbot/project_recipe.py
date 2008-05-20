@@ -32,11 +32,13 @@ class Project(BaseRecipe):
                      ('email-notification-sender', ''),
                      ('email-notification-recipient', ''),
                      ('test-sequence', '\n'.join([join('bin', 'test --exit-with-status')])),
-                     ('build-sequence', '\n'.join(
-                                             ['python bootstrap.py',
-                                              join('bin', 'buildout')])),
                      ):
             globs.setdefault(k, v)
+
+        if 'build-sequence' not in globs:
+            globs['build-sequence'] = '\n'.join(
+                ['python bootstrap.py',
+                 join('bin', 'buildout')])
 
         if globs['vcs'] == 'git':
             globs.setdefault('branch', 'master')
