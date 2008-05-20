@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-import sys
-import os
-import urlparse
 from os.path import join
 from collective.buildbot.recipe import BaseRecipe
 
-
 class Project(BaseRecipe):
+    """Buildout recipe to generate a project configuration file for a
+    buildbot project.
+    """
 
     config_dir = 'projects'
 
@@ -24,12 +23,10 @@ class Project(BaseRecipe):
                 globs[key] = value
 
         # project values
-        for key, value in self.options.items():
-            globs[key] = value
+        globs.update(dict(self.options.items()))
+        globs.pop('recipe', '')
 
         for k, v in (('vcs', 'svn'),
-                     ('branch', 'trunk'),
-                     ('base-url', ''),
                      ('mail-host', 'localhost'),
                      ('repository', ''),
                      ('email-notification-sender', ''),
@@ -41,7 +38,8 @@ class Project(BaseRecipe):
                      ):
             globs.setdefault(k, v)
 
-        globs['branch'] = '%s/%s' % (self.name, globs['branch'])
+        if globs['vcs'] == 'git':
+            globs.setdefault('branch', 'master')
 
         files.append(self.write_config(project, **{'project':globs}))
 
