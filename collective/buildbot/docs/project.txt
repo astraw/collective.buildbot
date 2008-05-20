@@ -119,36 +119,10 @@ under the ``projects`` directory in the parts::
     vcs = svn
     <BLANKLINE>
 
-Email notification::
-
-    >>> write('buildout.cfg',
-    ... """
-    ... [buildout]
-    ... parts = my.package
-    ... 
-    ... [my.package]
-    ... recipe = collective.buildbot:project
-    ... slave-names = slave1
-    ... vcs = svn
-    ... email-notification-sender = foo@bar.com
-    ... email-notification-recipient =
-    ...     bar@foo.com
-    ...     buildbot@foo.com
-    ... repository = http://example.com/svn/my.package/trunk
-    ...
-    ... """)
-
-
 The projects recipe
 *******************
 
-Supported options
-=================
-
-Options are the same than the project except one.
-
-projects
-
-  A list of projects name.
+The ``collective.buildbot:projects`` recipe is deprecated and not
+supported anymore.
 
   

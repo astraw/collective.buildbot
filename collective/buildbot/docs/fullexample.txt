@@ -50,6 +50,10 @@ scheduler.
     ... recipe = collective.buildbot:project
     ... slave-names = slave1
     ... repository = https://svn.company.com/svn/my.project/trunk
+    ... email-notification-sender = buildbot@my.company.com
+    ... email-notification-recipient =
+    ...     my.project@my.company.com
+    ...     dev@my.company.com
     ... build-sequence =
     ... test-sequence = ../../bin/python setup.py test
     ... 
@@ -57,6 +61,8 @@ scheduler.
     ... recipe = collective.buildbot:project
     ... slave-names = slave1
     ... repository = https://svn.company.com/svn/my.buildout/trunk
+    ... email-notification-sender = buildbot@my.company.com
+    ... email-notification-recipient = dev@my.company.com
     ... test-sequence = bin/test -v --exit-with-status
     ... 
     ... [another.package]
@@ -64,6 +70,8 @@ scheduler.
     ... slave-names = slave1
     ... vcs = git
     ... repository = git://git.company.com/projects/another-package.git
+    ... email-notification-sender = buildbot@my.company.com
+    ... email-notification-recipient = dev@my.company.com
     ... build-sequence =
     ... test-sequence = ../../bin/python setup.py test
     ... """)
