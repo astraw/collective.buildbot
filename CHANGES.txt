@@ -24,6 +24,11 @@
 
   - Deprecated the collective.buildbot:projects recipe [dokai]
 
+  - Fixed problem with missing twistd.log files on first run [dokai]
+
+  - Fixed bug that prevented the master from starting if there weren't
+    any SVN pollers configured. [dokai]
+
 
 0.1.1 (2008-05-02)
 ==================
