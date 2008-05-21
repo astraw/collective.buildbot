@@ -36,7 +36,7 @@ scheduler.
     ... allow-force = true
     ... public-html = ${buildout:directory}/buildbot_css
     ... slaves = 
-    ...     slave1 secretpassword
+    ...     buildslave secretpassword
     ... 
     ... [svnpoller]
     ... recipe = collective.buildbot:pollers
