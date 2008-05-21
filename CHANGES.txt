@@ -1,4 +1,4 @@
-0.2.0 (unreleased)
+0.2.0 (2008-05-21)
 ==================
 
   - Added irc options so you can attach an irc bot to the master buildbot
