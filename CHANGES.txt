@@ -1,3 +1,9 @@
+0.2.1 (2008-05-21)
+==================
+
+  - Fixed a critical typo in the slave name configuration in
+    fullexample.txt [dokai]
+
 0.2.0 (2008-05-21)
 ==================
 
