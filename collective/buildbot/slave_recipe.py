@@ -36,13 +36,30 @@ class Recipe(BaseRecipe):
             open(join(location, 'twistd.log'), 'w').write('')
 
         buildbot_cfg = join(location, 'buildbot.tac')
+
+        initialization = initialization_template 
+        env_section = self.options.get('environment', '').strip()
+        if env_section:
+            env = self.buildout[env_section]
+            for key, value in env.items():
+                initialization += env_template % (key, value)
+
         options = {'eggs':'collective.buildbot',
                    'entry-points': '%s=collective.buildbot.scripts:main' % self.name,
-                   'arguments': 'location=%r, config_file=%r' % (self.location, '')
+                   'arguments': 'location=%r, config_file=%r' % (self.location, ''),
+                   'initialization': initialization,
                   }
+
         script = zc.recipe.egg.Egg(self.buildout, self.name, options)
 
         return list(script.install()) + [filename]
 
     update = install
 
+
+
+initialization_template = """import os
+"""
+
+env_template = """os.environ['%s'] = %r
+"""

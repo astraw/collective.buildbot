@@ -33,6 +33,10 @@ The recipe supports the following options:
 ``eggs``
     Used to install extra eggs in slave environment.
 
+``environment`` 
+    Can define the name of a section, containing environment variable
+    that will be defined in the slave environment.
+
 Example usage
 =============
 
@@ -49,6 +53,10 @@ We'll start by creating a buildout that uses the recipe::
     ... host = localhost
     ... port = 8888
     ... password = password
+    ... environment = slaveenv
+    ...
+    ... [slaveenv]
+    ... PATH = /bin:/usr/bin:/usr/local/bin:/usr/local/firefox
     ... """)
 
 Running the buildout gives us::
