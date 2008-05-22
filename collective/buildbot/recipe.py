@@ -4,6 +4,7 @@ import sys
 import glob
 import shutil
 import virtualenv
+import subprocess
 from os.path import join
 from ConfigParser import ConfigParser
 
@@ -29,6 +30,9 @@ class BaseRecipe(object):
         try:
             sys.argv = ['iw_buildbot', '--no-site-packages', location]
             virtualenv.main()
+            if 'eggs' in self.options:
+                subprocess.call([join(location, 'bin', 'easy_install'),
+                                 self.options['eggs']])
         finally:
             sys.argv = old
 

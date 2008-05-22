@@ -30,6 +30,9 @@ The recipe supports the following options:
     Build slave password. This should match the password in the
     ``slave-names`` section in the buildmaster buildout.
 
+``eggs``
+    Used to install extra eggs in slave environment.
+
 Example usage
 =============
 
