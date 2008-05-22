@@ -31,8 +31,8 @@ class BaseRecipe(object):
             sys.argv = ['iw_buildbot', '--no-site-packages', location]
             virtualenv.main()
             if 'eggs' in self.options:
-                subprocess.call([join(location, 'bin', 'easy_install'),
-                                 self.options['eggs'].split('\n')])
+                subprocess.call([join(location, 'bin', 'easy_install'),] +
+                                 self.options['eggs'].split('\n'))
         finally:
             sys.argv = old
 
