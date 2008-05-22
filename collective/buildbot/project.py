@@ -1,4 +1,5 @@
 import os
+import sys
 import random
 from os.path import join
 
@@ -77,6 +78,8 @@ class Project(object):
 
     def executable(self):
         """returns python bin"""
+        if sys.platform == 'cygwin':
+            return sys.executable
         return os.sep.join(['..', '..', 'bin', 'python'])
 
     def checkBot(self, c):
