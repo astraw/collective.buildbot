@@ -3,7 +3,8 @@ SVN/Unreleased
 
   - desactive virtualenv under cygwin, this doesn't work [thefunny]
 
-  - 'environment' can be used to specify environment variable on slaves [thefunny]
+  - 'environment' can be used to specify environment variable on
+    slaves [thefunny]
 
   - 'eggs' can be used to install extra eggs in slaves [thefunny]
 
