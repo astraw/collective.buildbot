@@ -32,7 +32,7 @@ class BaseRecipe(object):
             virtualenv.main()
             if 'eggs' in self.options:
                 subprocess.call([join(location, 'bin', 'easy_install'),
-                                 self.options['eggs']])
+                                 self.options['eggs'].split('\n')])
         finally:
             sys.argv = old
 
