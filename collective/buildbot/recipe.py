@@ -26,6 +26,8 @@ class BaseRecipe(object):
             os.mkdir(dirname)
 
     def create_virtualenv(self, location):
+        if sys.platform == 'cygwin':
+            return              # Virtualenv doesn't work on cygwin.
         old = sys.argv
         try:
             sys.argv = ['iw_buildbot', '--no-site-packages', location]
