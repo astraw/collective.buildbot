@@ -1,6 +1,11 @@
 SVN/Unreleased
 ==============
 
+  - try to retrieve project name from svn urls [gawel]
+
+  - use a random minute in cron-scheduler when we have more than one repository
+    [gawel]
+
   - deactive virtualenv under cygwin, this doesn't work [thefunny]
 
   - 'environment' can be used to specify environment variable on

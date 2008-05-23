@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import random
 from os.path import join
 from collective.buildbot.recipe import BaseRecipe
 
@@ -63,7 +64,7 @@ class Projects(BaseRecipe):
     def install(self):
         options = dict([(k,v) for k,v in self.options.items()])
         log = logging.getLogger(self.name)
-        
+
         # BBB
         if 'repository' in options:
             log.info('The "repository" option is deprecated in favor '
@@ -74,14 +75,31 @@ class Projects(BaseRecipe):
                         in options.pop('repositories', '').splitlines()
                         if r.strip()]
 
+        cron = options.pop('cron-scheduler', None)
+        if cron:
+            try:
+                minute, hour, dom, month, dow = [v for v in cron.split()[:5]]
+            except (IndexError, ValueError, TypeError):
+                log.msg('Invalid cron definition for the cron scheduler: %s' % cron)
+                raise
+
         files = []
         for idx, repository in enumerate(repositories):
+            splited = repository.split('/')
             if len(repositories) > 1:
-                name = '%s_%s' % (self.name, idx)
+                minute = str(random.randint(1,59))
+                if splited[-1] == 'trunk':
+                    name = splited[-2]
+                elif splited[-2] == 'branches':
+                    name = splited[-3]
+                else:
+                    name = '%s_%s' % (self.name, idx)
             else:
                 name = self.name
 
             options['repository'] = repository
+            if cron:
+                options['cron-scheduler'] = ' '.join([minute, hour, dom, month, dow])
             p = Project(self.buildout, name, options)
             files.extend(p.install())
 

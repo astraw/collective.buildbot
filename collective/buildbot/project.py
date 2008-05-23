@@ -149,13 +149,13 @@ class Project(object):
         if cron is not None:
             try:
                 minute, hour, dom, month, dow = [v=='*' and v or int(v) for v in cron.split()[:5]]
-                name = 'Cron scheduler for %s' % self.name
+                name = 'Cron scheduler for %s at %s' % (self.name, cron)
                 schedulers.append(Nightly(
                         name, self.builders(), minute, hour, dom, month, dow))
-                        
+
             except (IndexError, ValueError, TypeError):
                 log.msg('Invalid cron definition for the cron scheduler: %s' % cron)
-                raise ValueError
+                raise
 
         log.msg('Adding schedulers for %s: %s' % (self.name, schedulers))
 
