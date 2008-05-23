@@ -32,13 +32,23 @@ The recipe supports the following options:
   project. Defaults to ``svn``. Other possible values are: ``hg``,
   ``bzr`` and ``git``.
 
-``repository`` (mandatory)
+``repositories`` (mandatory)
 
-  The URL to the code repository that corresponds to the selected
-  version control system. For Subversion this could be something like
+  A sequence of newline separated URLs to the code repositories that
+  correspond to the selected version control system. For Subversion
+  this could be something like
   ``https://svn.plone.org/svn/collective/collective.buildbot/trunk``
   or for Git something like
   ``git@github.com:dokai/hexagonit-swfheader.git``.
+
+  For each repository you define a separate Buildbot project
+  configuration will be generated that shares all the other
+  options. This is useful if you have multiple similar projects within
+  the same repository and can save you a lot of typing. Since
+  Subversion URLs contain the branch information it is even possible
+  to pull in code from separate branches. For other version control
+  system that use the ``branch`` option (e.g. Git) you're limited to a
+  single shared branch name.
 
 ``branch`` (optional)
 
@@ -115,7 +125,7 @@ and slaves, but here we will demonstrate only the use of the
     ... recipe = collective.buildbot:project
     ... slave-names = slave1
     ... vcs = svn
-    ... repository = http://example.com/svn/my.package/trunk
+    ... repositories = http://example.com/svn/my.package/trunk
     ... """)
 
 Running the buildout gives us::
@@ -138,10 +148,45 @@ under the ``projects`` directory in the parts::
     vcs = svn
     <BLANKLINE>
 
+If you have multiple similar projects you can define them within a
+single buildout section by providing multiple repository URLs. All the
+projects share the same options (except the repository URL). To
+further reduce repetition we've defined the base URL to our repository
+in the buildout section.
+
+    >>> write('buildout.cfg',
+    ... """
+    ... [buildout]
+    ... parts = my_project
+    ... svn = http://svn.example.com/svnroot
+    ... 
+    ... [my_project]
+    ... recipe = collective.buildbot:project
+    ... slave-names = slave1
+    ... vcs = svn
+    ... repositories =
+    ...    ${buildout:svn}/my.package/trunk
+    ...    ${buildout:svn}/other.package/tags/1.2.3
+    ...    ${buildout:svn}/third.package/branches/foobar
+    ... """)
+
+When we run the buildout we can see that it generated a separate
+configuration file for each project representing a single repository::
+
+    >>> print system(buildout)
+    Uninstalling my.package.
+    Installing my_project.
+    Generated config '/sample-buildout/parts/projects/my_project_0.cfg'.
+    Generated config '/sample-buildout/parts/projects/my_project_1.cfg'.
+    Generated config '/sample-buildout/parts/projects/my_project_2.cfg'.
+
+
+
 The projects recipe
 *******************
 
 The ``collective.buildbot:projects`` recipe is deprecated and not
-supported anymore.
+supported anymore. Simply supply multiple repositories for the
+``collective.buildbot:project`` recipe to achieve the same result.
 
   

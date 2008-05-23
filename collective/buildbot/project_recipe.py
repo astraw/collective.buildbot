@@ -2,6 +2,8 @@
 from os.path import join
 from collective.buildbot.recipe import BaseRecipe
 
+import logging
+
 class Project(BaseRecipe):
     """Buildout recipe to generate a project configuration file for a
     buildbot project.
@@ -50,24 +52,39 @@ class Project(BaseRecipe):
     update = install
 
 class Projects(BaseRecipe):
-    """Deprecated"""
+    """Multiple project support within a single buildout section.
+
+    All configuration options will be shared among the projects with
+    the exception of the repository. For Subversion repositories it is
+    possible to define separate branches/tags. For Git and other vcs
+    that use the ``branch`` option the branch will be shared also.
+    """
 
     def install(self):
         options = dict([(k,v) for k,v in self.options.items()])
-        projects = options.pop('projects')
-        projects = projects.splitlines()
-        projects = [p.strip() for p in projects if p.strip()]
-        base_url = options.pop('base-url')
-        if 'branch' in options:
-            branch = options.pop('branch')
-        else:
-            branch = 'trunk'
+        log = logging.getLogger(self.name)
+        
+        # BBB
+        if 'repository' in options:
+            log.info('The "repository" option is deprecated in favor '
+                     'of "repositories". Please update your buildout configuration.')
+            options['repositories'] = options.pop('repository')
+
+        repositories = [r.strip() for r
+                        in options.pop('repositories', '').splitlines()
+                        if r.strip()]
+
         files = []
-        for project in projects:
-            options['base-url'] = base_url
-            options['branch'] = branch
-            p = Project(self.buildout, project, options)
+        for idx, repository in enumerate(repositories):
+            if len(repositories) > 1:
+                name = '%s_%s' % (self.name, idx)
+            else:
+                name = self.name
+
+            options['repository'] = repository
+            p = Project(self.buildout, name, options)
             files.extend(p.install())
+
         return files
 
     update = install
