@@ -1,12 +1,21 @@
 SVN/Unreleased
 ==============
 
-  - desactive virtualenv under cygwin, this doesn't work [thefunny]
+  - deactive virtualenv under cygwin, this doesn't work [thefunny]
 
   - 'environment' can be used to specify environment variable on
     slaves [thefunny]
 
   - 'eggs' can be used to install extra eggs in slaves [thefunny]
+
+  - Refactored the functionality of the 'projects' recipe into the
+    'project' recipe and removed the 'projects' entry point. [dokai]
+
+  - Refactored the functionality of the 'pollers' recipe into the
+    'poller' recipe and removed the 'pollers' entry point. [dokai]
+
+  - Poller config files are now named after the section name, allowing
+    multiple poller sections to be defined. [dokai]
 
 0.2.1 (2008-05-21)
 ==================
