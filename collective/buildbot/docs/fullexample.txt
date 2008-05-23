@@ -39,7 +39,7 @@ scheduler.
     ...     buildslave secretpassword
     ... 
     ... [svnpoller]
-    ... recipe = collective.buildbot:pollers
+    ... recipe = collective.buildbot:poller
     ... repositories =
     ...     ${my.project:repositories}
     ...     ${my.buildout:repositories}
@@ -118,8 +118,8 @@ Let's run the buildout now.
     Installing my.buildout.
     Generated config '/sample-buildout/parts/projects/my.buildout.cfg'.
     Installing svnpoller.
-    Generated config '/sample-buildout/parts/pollers/poller_0.cfg'.
-    Generated config '/sample-buildout/parts/pollers/poller_1.cfg'.
+    Generated config '/sample-buildout/parts/pollers/svnpoller_0.cfg'.
+    Generated config '/sample-buildout/parts/pollers/svnpoller_1.cfg'.
     Installing another.package.
     Generated config '/sample-buildout/parts/projects/another.package.cfg'.
     <BLANKLINE>

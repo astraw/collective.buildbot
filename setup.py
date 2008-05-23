@@ -42,8 +42,7 @@ entry_points = {"zc.buildout": [
                     "master = collective.buildbot.master_recipe:Recipe",
                     "slave = collective.buildbot.slave_recipe:Recipe",
                     "project = collective.buildbot.project_recipe:Projects",
-                    "poller = collective.buildbot.poller_recipe:Poller",
-                    "pollers = collective.buildbot.poller_recipe:Pollers",
+                    "poller = collective.buildbot.poller_recipe:Pollers",
                     ],
                 }
 

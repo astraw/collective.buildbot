@@ -15,10 +15,10 @@ The recipe supports the following options:
   The version control system. Defaults to ``svn``. Currently only
   Subversion repositories are supported.
 
-``repository``
+``repositories``
 
-  Full URL to the branch in the code repository containing the project
-  code.
+  A sequence of newline separated full URLs to the branches in the
+  code repository containing the project code.
 
 ``hist-max``
 
@@ -53,7 +53,7 @@ We can define a poller to make our buildbot aware of commits::
     ... 
     ... [svnpoller]
     ... recipe = collective.buildbot:poller
-    ... repository = http://example.com/svn/buildout/trunk
+    ... repositories = http://example.com/svn/buildout/trunk
     ... user = h4x0r
     ... password = passwd
     ... """)
@@ -75,22 +75,35 @@ Poller generation. You can see here all the available options::
     poll-interval = 60
     <BLANKLINE>
 
+You can also have the poller to observe multiple repositories.
+
+    >>> write('buildout.cfg',
+    ... """
+    ... [buildout]
+    ... parts = svnpoller
+    ... 
+    ... [svnpoller]
+    ... recipe = collective.buildbot:poller
+    ... repositories =
+    ...     http://example.com/svn/buildout/trunk
+    ...     http://example.com/svn/some.project/branches/foobar
+    ...     http://other.server.com/svn/foo.bar/tags/1.0
+    ... user = h4x0r
+    ... password = passwd
+    ... """)
+
+    >>> print system(buildout)
+    Uninstalling svnpoller.
+    Installing svnpoller.
+    Generated config '/sample-buildout/parts/pollers/svnpoller_0.cfg'.
+    Generated config '/sample-buildout/parts/pollers/svnpoller_1.cfg'.
+    Generated config '/sample-buildout/parts/pollers/svnpoller_2.cfg'.
+    <BLANKLINE>
 
 The pollers recipe
 *******************
 
-The ``collective.buildbot:pollers`` is similar to the
-``collective.buildbot:poller`` recipe and the only difference is that
-it allows you to define multiple pollers in one buildout section.
-
-Supported options
-=================
-
-The options are otherwise the same except that ``repository`` is
-replaced by ``repositories``.
-
-``repositories``
-
-  A sequence of white space separated repository URLs to poll.
-
+The ``collective.buildbot:pollers`` recipe is deprecated. To get the
+same functionality simply provide multiple repository URLs to the
+``collective.buildbot:poller`` recipe.
   

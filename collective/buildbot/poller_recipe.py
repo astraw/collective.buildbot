@@ -2,6 +2,8 @@
 
 from collective.buildbot.recipe import BaseRecipe
 
+import logging
+
 class Poller(BaseRecipe):
 
     config_dir = 'pollers'
@@ -36,14 +38,30 @@ class Pollers(BaseRecipe):
 
     def install(self):
         options = dict([(k,v) for k,v in self.options.items()])
-        urls = options.pop('repositories')
-        urls = urls.splitlines()
-        urls = [p.strip() for p in urls if p.strip()]
+        log = logging.getLogger(self.name)
+
+        # BBB
+        if 'repository' in options:
+            log.info('The "repository" option is deprecated in favor '
+                     'of "repositories". Please update your buildout configuration.')
+            options['repositories'] = options.pop('repository')
+
+        repositories = [r.strip() for r
+                        in options.pop('repositories', '').splitlines()
+                        if r.strip()]
+
         files = []
-        for i, url in enumerate(urls):
+        for i, url in enumerate(repositories):
             options['repository'] = url
-            p = Poller(self.buildout, 'poller_%i' % i, options)
+
+            if len(repositories) > 1:
+                name = '%s_%s' % (self.name, i)
+            else:
+                name = self.name
+
+            p = Poller(self.buildout, name, options)
             files.extend(p.install())
+
         return files
 
     update = install
