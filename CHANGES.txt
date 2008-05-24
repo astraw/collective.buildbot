@@ -1,6 +1,13 @@
 SVN/Unreleased
 ==============
 
+  - Refactored project name extraction logic:
+    - Added Git support
+    - Added support for multiple projects resulting in duplicate
+      project names (e.g. projects referring to different branches in
+      a Subversion repository.)
+    [dokai]
+
   - try to retrieve project name from svn urls [gawel]
 
   - use a random minute in cron-scheduler when we have more than one repository

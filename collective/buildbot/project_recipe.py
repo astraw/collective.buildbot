@@ -61,6 +61,49 @@ class Projects(BaseRecipe):
     that use the ``branch`` option the branch will be shared also.
     """
 
+    def extract_name(self, url):
+        """Extracts a name for a project based on a repository URL.
+
+            >>> buildout = {'buildout' : {'parts-directory' : ''} }
+
+        The method knows how to handle different version control
+        system URLs. For Subversion the standard trunk/tags/branches
+        structure is supported.
+
+            >>> p = Projects(buildout, 'some-project', {'vcs' : 'svn'})
+            >>> p.extract_name('http://svn.server/my.project/trunk')
+            'my.project'
+            >>> p.extract_name('http://svn.server/my.project/tags/1.2.3')
+            'my.project'
+            >>> p.extract_name('http://svn.server/my.project/branches/major-refactoring')
+            'my.project'
+
+        Unknown repository layouts will fallback to the section name.
+
+            >>> p.extract_name('http://svn.server/my.project/stable')
+            'some-project'
+
+        Git repositories are also supported.
+
+            >>> p = Projects(buildout, 'git-project', {'vcs' : 'git'})
+            >>> p.extract_name('git://github.com/dokai/hexagonit-swfheader.git')
+            'hexagonit-swfheader'
+
+        """
+        vcs = self.options.get('vcs', 'svn')
+        parts = url.split('/')
+
+        if vcs == 'svn':
+            if parts[-1] == 'trunk':
+                return parts[-2]
+            elif parts[-2] in ('branches', 'tags'):
+                return parts[-3]
+        elif vcs == 'git':
+            if parts[-1].endswith('.git'):
+                return parts[-1][:-4]
+
+        return self.name
+
     def install(self):
         options = dict([(k,v) for k,v in self.options.items()])
         log = logging.getLogger(self.name)
@@ -76,7 +119,7 @@ class Projects(BaseRecipe):
                         if r.strip()]
 
         cron = options.pop('cron-scheduler', None)
-        if cron:
+        if cron is not None:
             try:
                 minute, hour, dom, month, dow = [v for v in cron.split()[:5]]
             except (IndexError, ValueError, TypeError):
@@ -84,21 +127,27 @@ class Projects(BaseRecipe):
                 raise
 
         files = []
-        for idx, repository in enumerate(repositories):
-            splited = repository.split('/')
+        project_names = set()
+
+        for repository in repositories:
             if len(repositories) > 1:
+                # Distribute builds randomly so we don't build
+                # everything at once
                 minute = str(random.randint(1,59))
-                if splited[-1] == 'trunk':
-                    name = splited[-2]
-                elif splited[-2] == 'branches':
-                    name = splited[-3]
-                else:
-                    name = '%s_%s' % (self.name, idx)
+                
+                # Make sure we use unique names for project config
+                # files
+                name = self.extract_name(repository)
+                idx = 2
+                while name in project_names:
+                    name = '%s_%s' % (self.extract_name(repository), idx)
+                    idx += 1
+                project_names.add(name)
             else:
                 name = self.name
 
             options['repository'] = repository
-            if cron:
+            if cron is not None:
                 options['cron-scheduler'] = ' '.join([minute, hour, dom, month, dow])
             p = Project(self.buildout, name, options)
             files.extend(p.install())

@@ -9,7 +9,7 @@ import unittest
 import zc.buildout.testing
 
 from zope.testing import doctest, renormalizing
-from collective.buildbot import project
+from collective.buildbot import project, project_recipe
 
 optionflags =  (doctest.ELLIPSIS |
                 doctest.NORMALIZE_WHITESPACE |
@@ -54,6 +54,7 @@ def test_suite():
                 )
             for filename in test_files])
     suite.addTest(doctest.DocTestSuite(project))
+    suite.addTest(doctest.DocTestSuite(project_recipe))
     return suite
 
 if __name__ == '__main__':
