@@ -107,7 +107,7 @@ Let's run the buildout now.
 
     >>> mkdir('buildbot_css')
     >>> print system(buildout)
-    Installing buildmaster.
+    Installing buildmaster...
     New python executable in /sample-buildout/parts/buildmaster/bin/python
     Installing setuptools............done.
     Generated script '/sample-buildout/parts/buildmaster/buildbot.tac'.
@@ -157,7 +157,7 @@ Running the buildout will give us the controller script::
 
     >>> print system(buildout)
     Uninstalling...
-    Installing buildslave.
+    Installing buildslave...
     New python executable in /sample-buildout/parts/buildslave/bin/python
     Installing setuptools............done.
     Generated script /sample-buildout/parts/buildslave/buildbot.tac.
