@@ -24,6 +24,7 @@ def setUp(test):
     zc.buildout.testing.install_develop('zope.interface', test)
     zc.buildout.testing.install_develop('Twisted', test)
     zc.buildout.testing.install_develop('buildbot', test)
+    zc.buildout.testing.install_develop('pyflakes', test)
 
     # Install the recipe in develop mode
     zc.buildout.testing.install_develop('collective.buildbot', test)

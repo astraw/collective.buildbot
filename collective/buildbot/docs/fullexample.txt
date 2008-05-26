@@ -182,8 +182,7 @@ and the pyflakes script::
     Installing setuptools............done.
     Generated script /sample-buildout/parts/buildslave/buildbot.tac.
     Generated script '/sample-buildout/bin/buildslave'.
-    Installing pyflakes.
-    Getting distribution for 'pyflakes'...
+    Installing pyflakes...
     Generated script '/sample-buildout/bin/pyflakes'.
     <BLANKLINE>
 

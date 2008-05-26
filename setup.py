@@ -46,7 +46,7 @@ entry_points = {"zc.buildout": [
                     ],
                 }
 
-tests_require=['zope.testing', 'zc.buildout']
+tests_require=['zope.testing', 'zc.buildout', 'pyflakes']
 
 setup(name='collective.buildbot',
       version=version,
