@@ -22,10 +22,6 @@ The available recipes are:
   * ``collective.buildbot:poller`` -- Produces configuration for code
     repository pollers.
 
-  * ``collective.buildbot:pollers`` -- Produces configuration for code
-    repository pollers by allowing multiple pollers to be configured
-    in a single buildout section.
-
 It is possible to use all the recipes in a single buildout and have
 both the master and slave(s) on the same machine. However, in most
 cases you will have one buildout for the build master that uses the

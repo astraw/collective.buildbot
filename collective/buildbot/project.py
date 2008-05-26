@@ -1,11 +1,10 @@
 import os
-import random
 from os.path import join
 
-from buildbot.scheduler import Scheduler
 from buildbot.scheduler import Nightly, Periodic
 from buildbot.process import factory
 from buildbot import steps
+from buildbot.steps.python import PyFlakes
 from buildbot.status import mail
 from twisted.python import log
 
@@ -192,8 +191,14 @@ class Project(object):
                          for cmd in self.test_sequence
                          if cmd.strip() != '']
 
+        pyflakes_sequence = []
+        if self.options.get('pyflakes', None) is not None:
+            pyflakes_cmds = self.options.get('pyflakes').strip().splitlines()
+            for pyf in pyflakes_cmds:
+                if len(pyf.strip()) > 0:
+                    pyflakes_sequence.append(s(PyFlakes, command=pyf.split()))
 
-        sequence = update_sequence + build_sequence + test_sequence
+        sequence = update_sequence + build_sequence + test_sequence + pyflakes_sequence
 
         for slave_name in self.slave_names:
             log.msg('Adding slave %s to %s project' % (slave_name, self.name))

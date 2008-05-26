@@ -1,12 +1,13 @@
 SVN/Unreleased
 ==============
 
-  - Refactored project name extraction logic:
-    - Added Git support
-    - Added support for multiple projects resulting in duplicate
-      project names (e.g. projects referring to different branches in
-      a Subversion repository.)
-    [dokai]
+  - Added support for running PyFlakes on projects. [dokai] 
+
+  - Refactored project name extraction logic [dokai]
+     - Added Git support
+     - Added support for multiple projects resulting in duplicate
+       project names (e.g. projects referring to different branches in
+       a Subversion repository.)
 
   - try to retrieve project name from svn urls [gawel]
 

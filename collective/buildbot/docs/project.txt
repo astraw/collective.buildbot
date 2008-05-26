@@ -106,7 +106,24 @@ The recipe supports the following options:
   build at 3:00 am every night you would use::
 
     cron-scheduler = 0 3 * * *
-   
+
+``pyflakes`` (optional)
+
+  A sequence of newline separated PyFlakes_ commands to run. If
+  defined, the given PyFlakes commands will be run after the test
+  sequence.
+
+  The commands should consist of a path to the ``pyflakes`` script and
+  a path to the source code container. For example, using a global
+  pyflakes installation on a project located under
+  ``src/some.project`` within the build directory you would set::
+
+    pyflakes = pyflakes src/some.project
+
+  You can also have your slave buildout install pyflakes and use that
+  instead of a globally installed version.
+
+  .. _PyFlakes: http://divmod.org/trac/wiki/DivmodPyflakes   
 
 Example usage
 =============
