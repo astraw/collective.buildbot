@@ -20,6 +20,13 @@ The recipe supports the following options:
   A sequence of newline separated full URLs to the branches in the
   code repository containing the project code.
 
+``splitter``
+
+  A regexp used to parse paths analyzed by the poller. The regexp must return 2
+  groups. The only important one is the project name to match in a builder
+  repository. (Default
+  '(?P<project>\S+\/trunk|\S+\/branches\/[^\/]+)/(?P<relative>.*)')
+
 ``hist-max``
 
   Number of history lines to look at (Default 100).

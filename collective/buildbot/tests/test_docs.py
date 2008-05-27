@@ -9,7 +9,9 @@ import unittest
 import zc.buildout.testing
 
 from zope.testing import doctest, renormalizing
-from collective.buildbot import project, project_recipe
+import collective.buildbot.poller
+import collective.buildbot.project
+import collective.buildbot.project_recipe
 
 optionflags =  (doctest.ELLIPSIS |
                 doctest.NORMALIZE_WHITESPACE |
@@ -30,6 +32,8 @@ def setUp(test):
     zc.buildout.testing.install_develop('collective.buildbot', test)
 
 def test_suite():
+
+    # doc file suite
     test_files = [
                   'master.txt',
                   'slave.txt',
@@ -54,8 +58,11 @@ def test_suite():
                         ]),
                 )
             for filename in test_files])
-    suite.addTest(doctest.DocTestSuite(project))
-    suite.addTest(doctest.DocTestSuite(project_recipe))
+
+    # doc test suite
+    suite.addTest(doctest.DocTestSuite(collective.buildbot.poller))
+    suite.addTest(doctest.DocTestSuite(collective.buildbot.project))
+    suite.addTest(doctest.DocTestSuite(collective.buildbot.project_recipe))
     return suite
 
 if __name__ == '__main__':

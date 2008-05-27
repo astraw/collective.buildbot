@@ -1,6 +1,19 @@
 SVN/Unreleased
 ==============
 
+  - use a custom scheduler to get poller working again.
+    [gawel]
+
+  - add splitter option to the poller recipe
+    [gawel]
+
+  - Refactored project name extraction logic:
+    - Added Git support
+    - Added support for multiple projects resulting in duplicate
+      project names (e.g. projects referring to different branches in
+      a Subversion repository.)
+    [dokai]
+
   - Added support for running PyFlakes on projects. [dokai] 
 
   - Refactored project name extraction logic [dokai]

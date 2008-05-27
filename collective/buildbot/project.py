@@ -1,6 +1,7 @@
 import os
 from os.path import join
 
+from collective.buildbot.scheduler import SVNScheduler
 from buildbot.scheduler import Nightly, Periodic
 from buildbot.process import factory
 from buildbot import steps
@@ -11,13 +12,6 @@ from twisted.python import log
 from collective.buildbot.utils import split_option
 
 s = factory.s
-
-def split_file(path):
-    parts = path.split('/')
-    if len(parts) < 2:
-        return None
-    project, branch = parts[0], parts[1]
-    return ('%s/%s' % (project, branch), '/'.join(parts[2:]))
 
 class Project(object):
     """A builbot project::
@@ -126,7 +120,14 @@ class Project(object):
         return [self.builder(s) for s in self.slave_names]
 
     def setScheduler(self, c):
+
         schedulers = []
+
+        # Always set a scheduler used by pollers
+        if self.vcs == 'svn':
+            schedulers.append(
+                    SVNScheduler('Scheduler for %s' % self.name, self.builders(),
+                                 repository=self.repository))
 
         # Set up a simple periodic scheduler
         periodic = self.options.get('periodic_scheduler', None)
