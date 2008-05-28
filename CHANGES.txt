@@ -4,9 +4,9 @@ SVN/Unreleased
 0.3.0 (2008-05-28)
 ==================
 
-  - use a custom scheduler to get poller working again. [gawel]
+  - Use a custom scheduler to get poller working again. [gawel]
 
-  - add splitter option to the poller recipe [gawel]
+  - Add splitter option to the poller recipe [gawel]
 
   - Added support for running PyFlakes on projects. [dokai] 
 
@@ -16,12 +16,12 @@ SVN/Unreleased
        duplicate project names (e.g. projects referring to different
        branches in a Subversion repository.)
 
-  - try to retrieve project name from svn urls [gawel]
+  - Try to retrieve project name from svn urls [gawel]
 
-  - use a random minute in cron-scheduler when we have more than one
+  - Use a random minute in cron-scheduler when we have more than one
     repository [gawel]
 
-  - deactive virtualenv under cygwin, this doesn't work [thefunny]
+  - Deactive virtualenv under cygwin, this doesn't work [thefunny]
 
   - 'environment' can be used to specify environment variable on
     slaves [thefunny]

@@ -2,7 +2,7 @@ import os
 from os.path import join
 
 from collective.buildbot.scheduler import SVNScheduler
-from buildbot.scheduler import Nightly, Periodic
+from buildbot.scheduler import Nightly, Periodic, Dependent
 from buildbot.process import factory
 from buildbot import steps
 from buildbot.steps.python import PyFlakes
@@ -67,6 +67,7 @@ class Project(object):
         self.repository = options.get('repository', '')
         self.branch = options.get('branch', '')
         self.options = options
+        self.schedulers = []
 
     def executable(self):
         """returns python bin"""
@@ -100,11 +101,11 @@ class Project(object):
                         self.name, self.email_notification_sender,
                         self.email_notification_recipients))
 
-    def __call__(self, c):
+    def __call__(self, c, registery):
         log.msg('Trying to add %s project' % self.name)
         try:
             self.checkBot(c)
-            self.setScheduler(c)
+            self.setScheduler(c, registery)
             self.setBuilder(c)
             self.setStatus(c)
         except Exception, e:
@@ -119,13 +120,11 @@ class Project(object):
     def builders(self):
         return [self.builder(s) for s in self.slave_names]
 
-    def setScheduler(self, c):
-
-        schedulers = []
+    def setScheduler(self, c, registery):
 
         # Always set a scheduler used by pollers
         if self.vcs == 'svn':
-            schedulers.append(
+            self.schedulers.append(
                     SVNScheduler('Scheduler for %s' % self.name, self.builders(),
                                  repository=self.repository))
 
@@ -138,11 +137,10 @@ class Project(object):
                     raise ValueError
 
                 name = 'Periodic scheduler for %s' % self.name
-                schedulers.append(Periodic(name, self.builders(), period * 60))
+                self.schedulers.append(Periodic(name, self.builders(), period * 60))
             except (TypeError, ValueError):
                 log.msg('Invalid period for periodic scheduler: %s' % period)
                 raise
-
 
         # Set up a cron-like scheduler
         cron = self.options.get('cron_scheduler', None)
@@ -150,16 +148,31 @@ class Project(object):
             try:
                 minute, hour, dom, month, dow = [v=='*' and v or int(v) for v in cron.split()[:5]]
                 name = 'Cron scheduler for %s at %s' % (self.name, cron)
-                schedulers.append(Nightly(
+                self.schedulers.append(Nightly(
                         name, self.builders(), minute, hour, dom, month, dow))
 
             except (IndexError, ValueError, TypeError):
                 log.msg('Invalid cron definition for the cron scheduler: %s' % cron)
                 raise
 
-        log.msg('Adding schedulers for %s: %s' % (self.name, schedulers))
+        # Set up a dependent scheduler
+        dependent = self.options.get('dependent_scheduler')
+        if dependent is not None:
+            try:
+                for parent in registery.runned(dependent, c, registery).schedulers:
+                    name = 'Dependent scheduler between scheduler <%s> and project %s' % \
+                        (parent.name, self.name)
+                    self.schedulers.append(Dependent(name, parent, self.builders()))
+            except KeyError:
+                log.msg('Invalid project %s selected as dependency' % dependent)
+                raise
+            except ValueError:
+                log.msg('Dependency loop detected')
+                raise
 
-        c['schedulers'].extend(schedulers)
+        log.msg('Adding schedulers for %s: %s' % (self.name, self.schedulers))
+
+        c['schedulers'].extend(self.schedulers)
 
     def setBuilder(self, c):
         executable = self.executable()

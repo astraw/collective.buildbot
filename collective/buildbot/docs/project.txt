@@ -107,6 +107,12 @@ The recipe supports the following options:
 
     cron-scheduler = 0 3 * * *
 
+``dependent-scheduler`` (optional)
+
+  Sets up a dependency between the given project and the current
+  one. After a successful build of the given project, this one will be
+  triggered.
+
 ``pyflakes`` (optional)
 
   A sequence of newline separated PyFlakes_ commands to run. If

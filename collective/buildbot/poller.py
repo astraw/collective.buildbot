@@ -28,7 +28,7 @@ class Poller(object):
         self.vcs = options.pop('vcs')
         self.options = options
 
-    def __call__(self, c):
+    def __call__(self, c, registery):
         if self.vcs == 'svn':
             self.setSVNPoller(c)
 

@@ -8,6 +8,7 @@ from buildbot.status import words
 from collective.buildbot.overrides import WebStatus
 from collective.buildbot.project import Project
 from collective.buildbot.poller import Poller
+from collective.buildbot.utils import Registery
 from ConfigParser import ConfigParser
 
 config = ConfigParser()
@@ -50,7 +51,7 @@ c['slaves'] = [BuildSlave(name, password, max_builds=max_builds,
                           missing_timeout=3600) for name, password in config.items('slaves')]
 
 for name, klass in (('project', Project), ('poller', Poller)):
-    files = dict()
+    registery = Registery()
     dirname = config.get('buildbot', '%ss-directory' % name)
     if os.path.isdir(dirname):
         for filename in os.listdir(dirname):
@@ -62,7 +63,9 @@ for name, klass in (('project', Project), ('poller', Poller)):
                 kwargs = dict([(key.replace('-', '_'), value)
                                     for key, value
                                     in pconf.items(name)])
-                klass(**kwargs)(c)
+                instance = klass(**kwargs)
+                registery.add(instance.name, instance)
+    registery.everyone(c, registery)
 
 projects_dir = config.get('buildbot', 'projects-directory')
 files = []
