@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
-class Registery(object):
-    """Registery to run callable.
+class Registry(object):
+    """Registry to run callable.
     """
     
     def __init__(self):

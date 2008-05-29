@@ -1,6 +1,12 @@
 SVN/Unreleased
 ==============
 
+0.4.0
+=====
+
+  - Add dependency between projects. The build of one project can
+    trigger the build of one other. [thefunny]
+
 0.3.0 (2008-05-28)
 ==================
 

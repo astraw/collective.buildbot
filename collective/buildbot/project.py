@@ -101,11 +101,11 @@ class Project(object):
                         self.name, self.email_notification_sender,
                         self.email_notification_recipients))
 
-    def __call__(self, c, registery):
+    def __call__(self, c, registry):
         log.msg('Trying to add %s project' % self.name)
         try:
             self.checkBot(c)
-            self.setScheduler(c, registery)
+            self.setScheduler(c, registry)
             self.setBuilder(c)
             self.setStatus(c)
         except Exception, e:
@@ -120,7 +120,7 @@ class Project(object):
     def builders(self):
         return [self.builder(s) for s in self.slave_names]
 
-    def setScheduler(self, c, registery):
+    def setScheduler(self, c, registry):
 
         # Always set a scheduler used by pollers
         if self.vcs == 'svn':
@@ -159,7 +159,7 @@ class Project(object):
         dependent = self.options.get('dependent_scheduler')
         if dependent is not None:
             try:
-                for parent in registery.runned(dependent, c, registery).schedulers:
+                for parent in registry.runned(dependent, c, registry).schedulers:
                     name = 'Dependent scheduler between scheduler <%s> and project %s' % \
                         (parent.name, self.name)
                     self.schedulers.append(Dependent(name, parent, self.builders()))
