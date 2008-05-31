@@ -1,15 +1,15 @@
 The poller recipe
 ******************
 
+The poller recipe defines pollers that automatically query the code
+repositories for changes in project code base and then execute the
+builders if changes are found.
+
 Supported options
 =================
 
 The recipe supports the following options:
 
-    Lists the projects the buildbot deal with (one project=one column) The
-    values must be a section name in the configuration file.  Then each of this
-    section must contain:
-    
 ``vcs``
 
   The version control system. Defaults to ``svn``. Currently only
@@ -17,9 +17,10 @@ The recipe supports the following options:
 
 ``repositories``
 
-  A sequence of newline separated URLs to the svn root repository containing
-  the project code. Note: This the svn root and not the full path to your
-  project.
+  A sequence of newline separated URLs to the root of the Subversion
+  repository containing the project code. Note: This is the root URL
+  to the repository and not the full path to your project. You only
+  need to provide one URL per repository, not per project.
 
 ``splitter``
 

@@ -1,33 +1,33 @@
 SVN/Unreleased
 ==============
 
-0.4.0
-=====
-
-  - Fixed poller documentation and examples
-  [mustapha]
-
-  - Fixed failed tests when your executable is called other thing that python.
-    ie: python2.4
-  [mustapha]
-
   - Add dependency between projects. The build of one project can
     trigger the build of one other. [thefunny]
+
+0.3.1 (2008-05-31)
+==================
+
+  - Fixed poller documentation and examples [mustapha]
+
+  - Fixed failed tests when your executable is called other thing that python.
+    ie: python2.4 [mustapha]
 
 0.3.0 (2008-05-28)
 ==================
 
-  - Use a custom scheduler to get poller working again. [gawel]
+  - Use a custom scheduler to get poller working again [gawel]
 
   - Add splitter option to the poller recipe [gawel]
 
-  - Added support for running PyFlakes on projects. [dokai] 
+  - Added support for running PyFlakes on projects [dokai] 
 
   - Refactored project name extraction logic [dokai]
-     - Added Git support
-     - Added support for defining multiple projects that result in
-       duplicate project names (e.g. projects referring to different
-       branches in a Subversion repository.)
+    
+    - Added Git support
+
+    - Added support for defining multiple projects that result in
+      duplicate project names (e.g. projects referring to different
+      branches in a Subversion repository.)
 
   - Try to retrieve project name from svn urls [gawel]
 
