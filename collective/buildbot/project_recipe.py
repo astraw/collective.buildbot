@@ -143,10 +143,6 @@ class Projects(BaseRecipe):
                     name = '%s_%s' % (self.extract_name(repository), idx)
                     idx += 1
                 project_names.add(name)
-                if 'dependent-scheduler'in options:
-                    # TODO
-                    log.info('dependent-scheduler is selected with projects'
-                             ' including more than one repository.')
             else:
                 name = self.name
 
