@@ -1,9 +1,3 @@
-SVN/Unreleased
-==============
-
-  - Add dependency between projects. The build of one project can
-    trigger the build of one other. [thefunny]
-
 0.3.1 (2008-05-31)
 ==================
 
