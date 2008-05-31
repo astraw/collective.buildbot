@@ -9,8 +9,8 @@ SVN/Unreleased
 
   - Fixed poller documentation and examples [mustapha]
 
-  - Fixed failed tests when your executable is called other thing that python.
-    ie: python2.4 [mustapha]
+  - Fixed failed tests when your executable is called something other
+    than python, e.g python2.4 [mustapha]
 
 0.3.0 (2008-05-28)
 ==================
