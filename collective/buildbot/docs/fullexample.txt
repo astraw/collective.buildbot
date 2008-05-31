@@ -44,15 +44,16 @@ code.
     ... [svnpoller]
     ... recipe = collective.buildbot:poller
     ... repositories =
-    ...     ${my.project:repositories}
-    ...     ${my.buildout:repositories}
+    ...     ${my.project:svnroot}
+    ...     ${my.buildout:svnroot}
     ... user = someuser
     ... password = anothersecret
     ... 
     ... [my.project]
     ... recipe = collective.buildbot:project
     ... slave-names = slave1
-    ... repositories = https://svn.company.com/svn/my.project/trunk
+    ... svnroot = https://svn.company.com/svn
+    ... repositories = ${my.project:svnroot}/my.project/trunk
     ... email-notification-sender = buildbot@my.company.com
     ... email-notification-recipient =
     ...     my.project@my.company.com
@@ -63,7 +64,8 @@ code.
     ... [my.buildout]
     ... recipe = collective.buildbot:project
     ... slave-names = slave1
-    ... repositories = https://svn.company.com/svn/my.buildout/trunk
+    ... svnroot = https://svn.othercompany.com/svn
+    ... repositories = ${my.buildout:svnroot}/my.buildout/trunk
     ... email-notification-sender = buildbot@my.company.com
     ... email-notification-recipient = dev@my.company.com
     ... test-sequence = bin/zope-instance test -v -vv
@@ -116,7 +118,7 @@ Let's run the buildout now.
     >>> mkdir('buildbot_css')
     >>> print system(buildout)
     Installing buildmaster...
-    New python executable in /sample-buildout/parts/buildmaster/bin/python
+    New python executable in /sample-buildout/parts/buildmaster/bin/...
     Installing setuptools............done.
     Generated script '/sample-buildout/parts/buildmaster/buildbot.tac'.
     Generated config '/sample-buildout/parts/buildmaster/buildbot.cfg'.
@@ -178,7 +180,7 @@ and the pyflakes script::
     >>> print system(buildout)
     Uninstalling...
     Installing buildslave...
-    New python executable in /sample-buildout/parts/buildslave/bin/python
+    New python executable in /sample-buildout/parts/buildslave/bin/...
     Installing setuptools............done.
     Generated script /sample-buildout/parts/buildslave/buildbot.tac.
     Generated script '/sample-buildout/bin/buildslave'.

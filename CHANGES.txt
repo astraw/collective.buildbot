@@ -4,6 +4,13 @@ SVN/Unreleased
 0.4.0
 =====
 
+  - Fixed poller documentation and examples
+  [mustapha]
+
+  - Fixed failed tests when your executable is called other thing that python.
+    ie: python2.4
+  [mustapha]
+
   - Add dependency between projects. The build of one project can
     trigger the build of one other. [thefunny]
 

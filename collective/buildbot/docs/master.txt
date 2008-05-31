@@ -86,7 +86,7 @@ Running the buildout gives us::
 
     >>> print system(buildout)
     Installing buildmaster...
-    New python executable in /sample-buildout/parts/buildmaster/bin/python
+    New python executable in /sample-buildout/parts/buildmaster/bin/...
     Installing setuptools.............done.
     Generated script '/sample-buildout/parts/buildmaster/buildbot.tac'.
     Generated config '/sample-buildout/parts/buildmaster/buildbot.cfg'.
