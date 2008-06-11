@@ -40,13 +40,15 @@ class BaseRecipe(object):
 
         is_posix = sys.platform != 'win32'
         executable = is_posix and 'python' or 'python.exe'
-        if not os.path.isfile(join(location, 'bin', executable)):
-            pythons = glob.glob(join(location, 'bin', 'python*'))
+        subfolder = is_posix and 'bin' or 'Scripts'  
+        if not os.path.isfile(join(location, subfolder, executable)):
+        
+            pythons = glob.glob(join(location, subfolder, 'python*'))
             shutil.copyfile(pythons[0],
-                            join(location, 'bin', executable))
+                            join(location, subfolder, executable))
 
             if is_posix:
-                os.chmod(join(location, 'bin', executable), 0755)
+                os.chmod(join(location, subfolder, executable), 0755)
 
     def write_config(self, name, **kwargs):
         config = ConfigParser()
