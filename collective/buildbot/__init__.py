@@ -21,15 +21,17 @@ def _startCommand(self):
 
     if type(self.command) in types.StringTypes:
         if runtime.platformType  == 'win32':
-            argv = [os.environ['COMSPEC'], '/c',
-                    self.command.replace('/','\\')]
+            if '//' not in self.command:
+                self.command = self.command.replace('/','\\')
+            argv = [os.environ['COMSPEC'], '/c', self.command]
         else:
             # for posix, use /bin/sh. for other non-posix, well, doesn't
             # hurt to try
             argv = ['/bin/sh', '-c', self.command]
     else:
         if runtime.platformType  == 'win32':
-            cmds = [cmd.replace('/','\\') for cmd in self.command]
+            cmds = [cmd.replace('/','\\') for cmd in self.command \
+                    if '//' not in self.command]
             argv = [os.environ['COMSPEC'], '/c'] + list(cmds)
         else:
             argv = self.command
