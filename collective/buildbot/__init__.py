@@ -30,8 +30,12 @@ def _startCommand(self):
             argv = ['/bin/sh', '-c', self.command]
     else:
         if runtime.platformType  == 'win32':
-            cmds = [cmd.replace('/','\\') for cmd in self.command \
-                    if '//' not in self.command]
+            cmds = []
+            for cmd in self.command:
+                if '//' not in cmd:
+                    cmds.append(cmd.replace('/','\\'))
+                else:
+                    cmds.append(cmd)
             argv = [os.environ['COMSPEC'], '/c'] + list(cmds)
         else:
             argv = self.command
