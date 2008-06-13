@@ -40,12 +40,14 @@ class BaseRecipe(object):
 
         is_posix = sys.platform != 'win32'
         executable = is_posix and 'python' or 'python.exe'
-        subfolder = is_posix and 'bin' or 'Scripts'  
+        subfolder = is_posix and 'bin' or 'Scripts'
         if not os.path.isfile(join(location, subfolder, executable)):
-        
             pythons = glob.glob(join(location, subfolder, 'python*'))
+            binLocation = join(location, 'bin')
+            if not os.path.exists(binLocation):
+                os.mkdir(binLocation)
             shutil.copyfile(pythons[0],
-                            join(location, subfolder, executable))
+                            join(binLocation, executable))
 
             if is_posix:
                 os.chmod(join(location, subfolder, executable), 0755)
