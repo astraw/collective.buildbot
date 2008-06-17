@@ -26,31 +26,45 @@ class BaseRecipe(object):
             os.mkdir(dirname)
 
     def create_virtualenv(self, location):
-        if sys.platform == 'cygwin':
-            return              # Virtualenv doesn't work on cygwin.
-        old = sys.argv
-        try:
-            sys.argv = ['iw_buildbot', '--no-site-packages', location]
-            virtualenv.main()
-            if 'eggs' in self.options:
-                eggs = [e for e in self.options['eggs'].split('\n') if e]
-                subprocess.call([join(location, 'bin', 'easy_install'),] + eggs)
-        finally:
-            sys.argv = old
+        is_win = (sys.platform == 'win32')
+        is_cygwin = (sys.platform == 'cygwin')
+        executable = (is_win or is_cygwin) and 'python.exe' or 'python'
+        binFolder = is_win and 'Scripts' or 'bin'
+        binLocation = join(location, binFolder)
 
-        is_posix = sys.platform != 'win32'
-        executable = is_posix and 'python' or 'python.exe'
-        subfolder = is_posix and 'bin' or 'Scripts'
-        if not os.path.isfile(join(location, subfolder, executable)):
-            pythons = glob.glob(join(location, subfolder, 'python*'))
-            binLocation = join(location, 'bin')
-            if not os.path.exists(binLocation):
-                os.mkdir(binLocation)
-            shutil.copyfile(pythons[0],
-                            join(binLocation, executable))
+        if is_cygwin:
+            # Virtualenv doesn't work on cygwin, but create a
+            # bin/python using the one of buildout
+            buildoutExecutable = self.buildout['buildout']['executable']
+            if not buildoutExecutable.endswith('exe'):
+                buildoutExecutable += '.exe'
+            unixBinLocation = join(location, 'bin')
+            if not os.path.isfile(join(unixBinLocation, executable)):
+                if not os.path.exists(unixBinLocation):
+                    os.mkdir(unixBinLocation)
+                os.symlink(buildoutExecutable,
+                           join(unixBinLocation, executable))
+        else:
+            old = sys.argv
+            try:
+                sys.argv = ['virtualenv', '--no-site-packages', location]
+                virtualenv.main()
+                if 'eggs' in self.options:
+                    eggs = [e for e in self.options['eggs'].split('\n') if e]
+                    subprocess.call([join(binLocation, 'easy_install'),] + eggs)
+            finally:
+                sys.argv = old
 
-            if is_posix:
-                os.chmod(join(location, subfolder, executable), 0755)
+        if is_win:
+            # On windows, add a bin/python
+            unixBinLocation = join(location, 'bin')
+            if not os.path.isfile(join(unixBinLocation, executable)):
+                pythons = glob.glob(join(binLocation, 'python*'))
+                if not os.path.exists(unixBinLocation):
+                    os.mkdir(unixBinLocation)
+                shutil.copyfile(pythons[0],
+                                join(unixBinLocation, executable))
+
 
     def write_config(self, name, **kwargs):
         config = ConfigParser()
