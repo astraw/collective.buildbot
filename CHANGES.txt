@@ -4,6 +4,11 @@ SVN/Unreleased
   - Add dependency between projects. The build of one project can
     trigger the build of one other. [thefunny]
 
+  - Improve the virtual env creation for Windows (mingw) and Cygwin.
+    Installation of eggs works with mingw, and we should get a python
+    ../../bin/python for Cygwin as well (symlink to the python used to
+    run buildout). [thefunny]
+
 0.3.1 (2008-05-31)
 ==================
 
