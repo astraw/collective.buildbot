@@ -1,6 +1,10 @@
 SVN/Unreleased
 ==============
 
+  - Added a mechanism to have username/password for Subversion authentication
+    Which consists of a buildbot patch and a link to .httpauth on buildout side
+    [tarek]
+
   - Add dependency between projects. The build of one project can
     trigger the build of one other. [thefunny]
 

@@ -129,3 +129,158 @@ def _startCommand(self):
 
 from buildbot.slave import commands
 commands.ShellCommand._startCommand = _startCommand
+
+#
+# patching SVN so it can take username/password
+#
+def SVN_setup(self, args):
+    SourceBase.setup(self, args)
+    self.vcexe = getCommand("svn")
+    self.svnurl = args['svnurl']
+    self.sourcedata = "%s\n" % self.svnurl
+    self.username = args.get("username", None) 
+    self.password = args.get("password", None) 
+
+commands.SVN.setup = SVN_setup
+
+def SVN_doVCUpdate(self):
+    revision = self.args['revision'] or 'HEAD'
+    # update: possible for mode in ('copy', 'update')
+    d = os.path.join(self.builder.basedir, self.srcdir)
+    command = [self.vcexe, 'update', '--revision', str(revision),
+            '--non-interactive', '--no-auth-cache']
+    if self.username:
+        command += ['--username', self.username]
+    if self.password: 
+        command += ['--password', self.password] 
+
+    c = ShellCommand(self.builder, command, d,
+                    sendRC=False, timeout=self.timeout,
+                    keepStdout=True)
+    self.command = c
+    return c.start()
+
+commands.SVN.doVCUpdate = SVN_doVCUpdate
+
+def SVN_doVCFull(self):
+    revision = self.args['revision'] or 'HEAD'
+    d = self.builder.basedir
+    if self.mode == "export":
+        command = [self.vcexe, 'export', '--revision', str(revision),
+                '--non-interactive', '--no-auth-cache']
+    else:
+        # mode=='clobber', or copy/update on a broken workspace
+        command = [self.vcexe, 'checkout', '--revision', str(revision),
+                '--non-interactive', '--no-auth-cache']
+    
+    if self.username: 
+        command += ['--username', self.username] 
+    if self.password: 
+        command += ['--password', self.password]
+    
+    command += [self.svnurl, self.srcdir]
+
+    c = ShellCommand(self.builder, command, d,
+                    sendRC=False, timeout=self.timeout,
+                    keepStdout=True)
+    self.command = c
+    return c.start()
+
+commands.SVN.doVCFull = SVN_doVCFull
+
+from buildbot import steps
+from buildbot.steps.source import Source
+
+def SVNStep__init__(self, svnurl=None, baseURL=None, defaultBranch=None,
+                    directory=None, **kwargs):
+       
+        if not kwargs.has_key('workdir') and directory is not None:
+            # deal with old configs
+            warn("Please use workdir=, not directory=", DeprecationWarning)
+            kwargs['workdir'] = directory
+
+        self.svnurl = svnurl
+        self.baseURL = baseURL
+        self.branch = defaultBranch
+        self.username = kwargs.get("username")         
+        if "username" in kwargs: 
+            del kwargs["username"] 
+        self.password = kwargs.get("password") 
+        if "password" in kwargs: 
+            del kwargs["password"] 
+
+        Source.__init__(self, **kwargs)
+        self.addFactoryArguments(svnurl=svnurl,
+                                 baseURL=baseURL,
+                                 defaultBranch=defaultBranch,
+                                 directory=directory,
+                                 )
+
+        if not svnurl and not baseURL:
+            raise ValueError("you must use exactly one of svnurl and baseURL")
+
+steps.source.SVN.__init__ = SVNStep__init__ 
+
+from buildbot.process.buildstep import LoggedRemoteCommand
+from buildbot.interfaces import BuildSlaveTooOldError
+from twisted.python import log 
+
+def SVNStep_startVC(self, branch, revision, patch):
+    warnings = []
+    slavever = self.slaveVersion("svn", "old")
+    if not slavever:
+        m = "slave does not have the 'svn' command"
+        raise BuildSlaveTooOldError(m)
+
+    if self.slaveVersionIsOlderThan("svn", "1.39"):
+        if (branch != self.branch
+            and self.args['mode'] in ("update", "copy")):
+            m = ("This buildslave (%s) does not know about multiple "
+                    "branches, and using mode=%s would probably build the "
+                    "wrong tree. "
+                    "Refusing to build. Please upgrade the buildslave to "
+                    "buildbot-0.7.0 or newer." % (self.build.slavename,
+                                                self.args['mode']))
+            raise BuildSlaveTooOldError(m)
+
+    if slavever == "old":
+        if self.args['mode'] in ("clobber", "copy"):
+            warnings.append("WARNING: this slave can only do SVN updates"
+                            ", not mode=%s\n" % self.args['mode'])
+            log.msg("WARNING: this slave only does mode=update")
+        if self.args['mode'] == "export":
+            raise BuildSlaveTooOldError("old slave does not have "
+                                        "mode=export")
+        self.args['directory'] = self.args['workdir']
+        if revision is not None:
+            m = ("WARNING: old slave can only update to HEAD, not "
+                    "revision=%s" % revision)
+            log.msg(m)
+            warnings.append(m + "\n")
+        revision = "HEAD" # interprets this key differently
+        if patch:
+            raise BuildSlaveTooOldError("old slave can't do patch")
+
+    if self.svnurl:
+        assert not branch # we need baseURL= to use branches
+        self.args['svnurl'] = self.svnurl
+    else:
+        self.args['svnurl'] = self.baseURL + branch
+    self.args['revision'] = revision
+    self.args['patch'] = patch
+
+    revstuff = []
+    if branch is not None and branch != self.branch:
+        revstuff.append("[branch]")
+    if revision is not None:
+        revstuff.append("r%s" % revision)
+    if patch is not None:
+        revstuff.append("[patch]")
+    self.description.extend(revstuff)
+    self.descriptionDone.extend(revstuff)
+
+    cmd = LoggedRemoteCommand("svn", self.args)
+    self.startCommand(cmd, warnings)
+
+steps.source.SVN.startVC = SVNStep_startVC
+

@@ -54,7 +54,7 @@ class Project(object):
         self.mail_host = options.get('mail_host', 'localhost')
         self.email_notification_sender = options.get('email_notification_sender','').strip()
         self.email_notification_recipients = options.get('email_notification_recipients', '').split()
-
+        
         self.slave_names =  options.get('slave_names', '').split()
         self.vcs = options.get('vcs', 'svn')
 
@@ -68,6 +68,19 @@ class Project(object):
         self.branch = options.get('branch', '')
         self.options = options
         self.schedulers = []
+        self.username, self.password = self._get_login(self.repository)
+
+    def _get_login(self, repository):
+        """gets an option in .httpauth"""
+        httpauth = join(os.path.expanduser('~'), '.buildout', '.httpauth')
+        if not os.path.exists(httpauth):
+            return None, None
+        for line in open(httpauth):
+            realm, url, username, password = (l.strip() for l in line.split(','))
+            if repository.startswith(url):
+                return username, password
+        return None, None
+        
 
     def executable(self):
         """returns python bin"""
@@ -178,7 +191,11 @@ class Project(object):
         executable = self.executable()
 
         if self.vcs == 'svn':
-            update_sequence = [s(steps.source.SVN, mode="update", svnurl=self.repository)]
+            if self.username is not None and self.password is not None:
+                update_sequence = [s(steps.source.SVN, mode="update", svnurl=self.repository,
+                                     username=self.username, password=self.password)]
+            else:
+                update_sequence = [s(steps.source.SVN, mode="update", svnurl=self.repository)]
         elif self.vcs in  ('hg', 'bzr'):
             if self.vcs == 'hg':
                 klass = steps.source.Mercurial

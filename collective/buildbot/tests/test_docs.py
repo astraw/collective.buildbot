@@ -40,6 +40,7 @@ def test_suite():
                   'project.txt',
                   'poller.txt',
                   'fullexample.txt',
+                  'svnauth.txt'
                  ]
     suite = unittest.TestSuite([
             doctest.DocFileSuite(
