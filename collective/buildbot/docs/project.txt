@@ -41,6 +41,10 @@ The recipe supports the following options:
   or for Git something like
   ``git@github.com:dokai/hexagonit-swfheader.git``.
 
+  For Subversion, if the url root is found in HOME/.buildout/.httpauth,
+  username and password will be used to perform checkouts and updates.
+  See: http://pypi.python.org/pypi/lovely.buildouthttp.
+
   For each repository you define a separate Buildbot project
   configuration will be generated that shares all the other
   options. This is useful if you have multiple similar projects within
