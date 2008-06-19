@@ -69,7 +69,7 @@ class Project(object):
         self.options = options
         self.schedulers = []
         self.username, self.password = self._get_login(self.repository)
-
+ 
     def _get_login(self, repository):
         """gets an option in .httpauth"""
         httpauth = join(os.path.expanduser('~'), '.buildout', '.httpauth')

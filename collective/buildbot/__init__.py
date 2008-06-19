@@ -194,7 +194,8 @@ from buildbot import steps
 from buildbot.steps.source import Source
 
 def SVNStep__init__(self, svnurl=None, baseURL=None, defaultBranch=None,
-                    directory=None, **kwargs):
+                    directory=None, username=None,
+                    password=None, **kwargs):
        
         if not kwargs.has_key('workdir') and directory is not None:
             # deal with old configs
@@ -204,18 +205,16 @@ def SVNStep__init__(self, svnurl=None, baseURL=None, defaultBranch=None,
         self.svnurl = svnurl
         self.baseURL = baseURL
         self.branch = defaultBranch
-        self.username = kwargs.get("username")         
-        if "username" in kwargs: 
-            del kwargs["username"] 
-        self.password = kwargs.get("password") 
-        if "password" in kwargs: 
-            del kwargs["password"] 
+        self.username = username
+        self.password = password
 
         Source.__init__(self, **kwargs)
         self.addFactoryArguments(svnurl=svnurl,
                                  baseURL=baseURL,
                                  defaultBranch=defaultBranch,
                                  directory=directory,
+                                 username=username,
+                                 password=password
                                  )
 
         if not svnurl and not baseURL:
@@ -270,7 +269,10 @@ def SVNStep_startVC(self, branch, revision, patch):
         self.args['svnurl'] = self.baseURL + branch
     self.args['revision'] = revision
     self.args['patch'] = patch
-
+    if self.username: 
+        self.args['username'] = self.username
+    if self.password:
+        self.args['password'] = self.password 
     revstuff = []
     if branch is not None and branch != self.branch:
         revstuff.append("[branch]")
