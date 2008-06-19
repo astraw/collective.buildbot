@@ -133,6 +133,8 @@ commands.ShellCommand._startCommand = _startCommand
 #
 # patching SVN so it can take username/password
 #
+from buildbot.slave.commands import SourceBase, getCommand, ShellCommand
+
 def SVN_setup(self, args):
     SourceBase.setup(self, args)
     self.vcexe = getCommand("svn")
