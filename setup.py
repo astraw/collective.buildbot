@@ -13,11 +13,6 @@ version = '0.4.0'
 long_description = (
     read('README.txt')
     + '\n' +
-    'Change history\n'
-    '**************\n'
-    + '\n' +
-    read('CHANGES.txt')
-    + '\n' +
     read('collective', 'buildbot', 'README.txt')
     + '\n' +
     read('collective', 'buildbot', 'docs', 'master.txt')
@@ -34,6 +29,11 @@ long_description = (
     '************\n'
     + '\n' +
     read('CONTRIBUTORS.txt')
+    + '\n' +
+    'Change history\n'
+    '**************\n'
+    + '\n' +
+    read('CHANGES.txt')
     + '\n' +
     'Download\n'
     '********\n'
