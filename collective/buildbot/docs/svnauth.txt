@@ -1,0 +1,35 @@
+Authentication with SVN
+***********************
+
+Let's create an .httpauth file::
+
+    >>> import os
+    >>> os.mkdir('.buildout')
+    >>> auth = open(join('.buildout', '.httpauth'), 'w')
+    >>> auth.write('trac,https://svn.othercompany.com,tarek,secret')
+    >>> auth.close()
+
+Let's say HOME is the working directory:
+    
+    >>> old_home = os.environ['HOME']
+    >>> os.environ['HOME'] = os.getcwd()
+
+Let's create a project::
+
+    >>> from collective.buildbot.project import Project
+    >>> project = Project(repository='https://svn.othercompany.com/trunk')
+ 
+We should get the right username/password::
+
+    >>> project.username
+    'tarek'
+    >>> project.password
+    'secret'
+
+Let's remove::
+
+    >>> import shutil
+    >>> shutil.rmtree('.buildout')
+    >>> os.environ['HOME'] = old_home
+
+
