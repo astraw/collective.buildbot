@@ -300,5 +300,5 @@ if sys.platform == 'win32':
         import sys
         twisted.internet.reactor = reactor
 
-   main.installReactor = _installReactor
+    main.installReactor = _installReactor
 
