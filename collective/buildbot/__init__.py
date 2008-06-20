@@ -288,3 +288,17 @@ def SVNStep_startVC(self, branch, revision, patch):
 
 steps.source.SVN.startVC = SVNStep_startVC
 
+#
+# patching twisted
+#
+import sys
+if sys.platform == 'win32':
+    from twisted.internet import main
+    
+    def _installReactor(reactor):
+        import twisted.internet
+        import sys
+        twisted.internet.reactor = reactor
+
+   main.installReactor = _installReactor
+
