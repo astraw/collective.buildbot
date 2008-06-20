@@ -4,7 +4,7 @@ import os
 import sys
 import collective.buildbot
 
-basedir = '%(base_dir)s'
+basedir = r'%(base_dir)s'
 buildbot = os.path.dirname(collective.buildbot.__file__)
 
 configfile = os.path.join(buildbot, 'master.py')

@@ -54,10 +54,7 @@ class Recipe(BaseRecipe):
 
         # adds buildbot.tac
         template = open(join(self.recipe_dir, 'buildbot.tac_tmpl')).read()
-        if sys.platform == 'win32':
-            template = template % {'base_dir': self.location.replace('\\', '\\\\')}
-        else:
-            template = template % {'base_dir': self.location}
+        template = template % {'base_dir': self.location}
         buildbot_tac = join(self.location, 'buildbot.tac')
         open(buildbot_tac, 'w').write(str(template))
         self.log('Generated script %r.' % buildbot_tac)

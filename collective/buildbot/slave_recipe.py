@@ -22,10 +22,7 @@ class Recipe(BaseRecipe):
         self.create_virtualenv(location)
         data = dict([(key.replace('-', '_'), value)
                      for key, value in self.options.items()])
-        if sys.platform == 'win32':
-            data['base_dir'] = location.replace('\\', '\\\\')
-        else:
-            data['base_dir'] = location
+        data['base_dir'] = location
         data['slave_name'] = self.name
 
         template = open(join(self.recipe_dir, 'slave.tac_tmpl')).read()
