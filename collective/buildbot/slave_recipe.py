@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Recipe devserver"""
 import os
+import sys
 from os.path import join, exists
 import zc.buildout
 import zc.recipe.egg
@@ -21,7 +22,10 @@ class Recipe(BaseRecipe):
         self.create_virtualenv(location)
         data = dict([(key.replace('-', '_'), value)
                      for key, value in self.options.items()])
-        data['base_dir'] = location
+        if sys.platform == 'win32':
+            data['base_dir'] = location.replace('\\', '\\\\')
+        else:
+            data['base_dir'] = location
         data['slave_name'] = self.name
 
         template = open(join(self.recipe_dir, 'slave.tac_tmpl')).read()

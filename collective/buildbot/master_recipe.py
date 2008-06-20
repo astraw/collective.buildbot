@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Recipe buildmaster"""
 import os
+import sys
 import shutil
 import zc.buildout
 import buildbot.status.web
@@ -53,7 +54,10 @@ class Recipe(BaseRecipe):
 
         # adds buildbot.tac
         template = open(join(self.recipe_dir, 'buildbot.tac_tmpl')).read()
-        template = template % {'base_dir': self.location}
+        if sys.platform == 'win32':
+            template = template % {'base_dir': self.location.replace('\\', '\\\\')}
+        else:
+            template = template % {'base_dir': self.location}
         buildbot_tac = join(self.location, 'buildbot.tac')
         open(buildbot_tac, 'w').write(str(template))
         self.log('Generated script %r.' % buildbot_tac)
