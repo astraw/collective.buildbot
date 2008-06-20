@@ -108,7 +108,7 @@ The Twisted .tac file that is used to launch the buildbot process::
     import sys
     import collective.buildbot
     <BLANKLINE>
-    basedir = '/sample-buildout/parts/buildmaster'
+    basedir = r'/sample-buildout/parts/buildmaster'
     buildbot = os.path.dirname(collective.buildbot.__file__)
     <BLANKLINE>
     configfile = os.path.join(buildbot, 'master.py')
