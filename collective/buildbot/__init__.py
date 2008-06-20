@@ -294,11 +294,16 @@ steps.source.SVN.startVC = SVNStep_startVC
 import sys
 if sys.platform == 'win32':
     from twisted.internet import main
-    
+    key = 'twisted.internet.reactor'
+
+    if sys.modules.has_key(key):
+        if sys.modules[key] != reactor:
+            raise AssertionError('reactor already installed: %s' % sys.modules[key])
+        
     def _installReactor(reactor):
         import twisted.internet
         import sys
         twisted.internet.reactor = reactor
-
+	sys.modules[key] = reactor
     main.installReactor = _installReactor
 
