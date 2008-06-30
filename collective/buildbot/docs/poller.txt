@@ -43,7 +43,7 @@ The recipe supports the following options:
 
 ``poll-interval``
 
-  Interval in seconds to check for changes.
+  Interval in seconds to check for changes (Default 600).
 
 ``svn-binary``
 
