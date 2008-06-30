@@ -1,6 +1,10 @@
 SVN/Unreleased
 ==============
 
+  - Fixed occurrences of `email-notification-recipients` to the singular form
+    as used in most places.
+    [hannosch]
+
   - Added a mechanism to have username/password for Subversion authentication
     Which consists of a buildbot patch and a link to .httpauth on buildout side
     [tarek]

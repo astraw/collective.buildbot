@@ -20,7 +20,7 @@ class Project(BaseRecipe):
 
         # default values in buildout section
         valid_args = ('mail-host', 'email-notification-sender',
-                      'email-notification-recipients',)
+                      'email-notification-recipient',)
         for key, value in self.buildout['buildout'].items():
             if key in valid_args:
                 globs[key] = value

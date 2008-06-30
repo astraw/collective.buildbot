@@ -67,7 +67,7 @@ The recipe supports the following options:
   An email address that will be used in the From: header for the
   notification messages.
 
-``email-notification-recipients`` (optional)
+``email-notification-recipient`` (optional)
 
   A newline separated sequence of email addresses the notification
   messages will be sent to.
