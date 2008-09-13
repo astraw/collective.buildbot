@@ -1,18 +1,33 @@
-[buildout]
-parts = master slave project
-
 [master]
-recipe = $recipe:project
-wport = $wport
-port = $port
+recipe = ${recipe}:master
+project-name = ${project} project
+port = ${port}
+wport = ${wport}
 slaves =
-    slave $password
+    slave ${password}
 
 [slave]
-recipe = $recipe:slave
-password = $password
-port=$port
+recipe = ${recipe}:slave
+host = localhost
+port = ${post}
+password = ${password}
 
-[project]
-recipe = $recipe:project
+[${project}]
+recipe = ${recipe}:project
+slave-names = slave
+vcs = ${vcs}
+repositories = ${vcs_url}
+
+# run test each hour
+periodic-scheduler=60
+
+# You can change the sequences to build / test your app
+#build-sequence =
+#    /usr/bin/python2.5 buildout/bootstrap.py -c buildout/project.cfg
+#    /usr/bin/python2.5 buildout/bin/buildout -c buildout/project.cfg
+
+#test-sequence =
+#    buildout/bin/test
+
+
 
