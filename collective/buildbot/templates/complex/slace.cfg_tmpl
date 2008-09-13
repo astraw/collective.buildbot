@@ -1,0 +1,10 @@
+[buildout]
+parts = slave
+
+[slave]
+recipe = ${recipe}:slave
+host = localhost
+port = ${port}
+password = ${password}
+
+

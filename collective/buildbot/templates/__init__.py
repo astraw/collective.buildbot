@@ -20,7 +20,7 @@ class Simple(Template):
                 ),
             var(name='wport',
                 description='the port to use for web interface',
-                default='980',
+                default='9080',
                 should_echo=True
                 ),
             var(name='vcs',
@@ -38,3 +38,9 @@ class Simple(Template):
         vars['recipe'] = recipe
         vars['password'] = ''.join([random.choice(string.ascii_letters) for i in range(8)])
         print vars
+
+class Complex(Simple):
+    summary = 'A template for %s' % recipe
+    required_templates = []
+    _template_dir = 'complex'
+

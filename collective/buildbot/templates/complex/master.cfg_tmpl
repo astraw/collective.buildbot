@@ -1,5 +1,5 @@
 [buildout]
-parts = master ${egg} slave
+parts = master ${egg}
 
 [master]
 recipe = ${recipe}:master
@@ -9,13 +9,7 @@ wport = ${wport}
 slaves =
     slave ${password}
 
-[slave]
-recipe = ${recipe}:slave
-host = localhost
-port = ${port}
-password = ${password}
-
-[${project}]
+[${egg}]
 recipe = ${recipe}:project
 slave-names = slave
 vcs = ${vcs}
@@ -31,6 +25,5 @@ periodic-scheduler=60
 
 #test-sequence =
 #    buildout/bin/test
-
 
 
