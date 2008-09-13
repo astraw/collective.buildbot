@@ -44,6 +44,10 @@ entry_points = {"zc.buildout": [
                     "project = collective.buildbot.project_recipe:Projects",
                     "poller = collective.buildbot.poller_recipe:Pollers",
                     ],
+                "paste.paster_create_template" : [
+                    "buildbot = collective.buildbot.templates:Complex",
+                    "buildbot_simple = collective.buildbot.templates:Simple",
+                    ],
                 }
 
 tests_require=['zope.testing', 'zc.buildout', 'pyflakes']
@@ -76,6 +80,7 @@ setup(name='collective.buildbot',
                         'zope.interface',
                         'Twisted',
                         'buildbot',
+                        'PasteScript',
                         ],
       tests_require=tests_require,
       extras_require=dict(tests=tests_require),
