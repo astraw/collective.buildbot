@@ -1,6 +1,9 @@
 SVN/Unreleased
 ==============
 
+  - Add paster template to quickly generate a basic configuration
+    [gawel]
+
   - Fixed occurrences of `email-notification-recipients` to the singular form
     as used in most places.
     [hannosch]

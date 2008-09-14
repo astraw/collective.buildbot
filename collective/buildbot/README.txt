@@ -32,3 +32,28 @@ slave machines that use the ``collective.buildbot:slave`` recipe.
 .. _zc.buildout: http://pypi.python.org/pypi/zc.buildout
 .. _buildbot: http://pypi.python.org/pypi/buildbot
 
+Quick start
+***********
+
+A paster template is provided with the package to generate a basic
+configuration. Just run::
+
+  $ easy_install -U collective.buildbot
+  $ paster create -t buildbot my.project
+  $ cd my.project
+
+Check the generated configuration in `master.cfg`.
+
+Build the environnement::
+
+  $ python bootstrap.py
+  $ ./bin/buildout
+
+Then start deamons::
+
+  $ ./bin/master start
+  $ ./bin/yourhostname start
+
+Go to http://localhost:9080 and enjoy your new buildbot
+
+
