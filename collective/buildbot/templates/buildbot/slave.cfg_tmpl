@@ -1,7 +1,7 @@
 [buildout]
-parts = slave
+parts = ${hostname}
 
-[slave]
+[${hostname}]
 recipe = ${recipe}:slave
 host = localhost
 port = ${port}
