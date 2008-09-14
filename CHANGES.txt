@@ -1,5 +1,5 @@
-SVN/Unreleased
-==============
+0.3.2 (2008-09-14)
+==================
 
   - Add paster template to quickly generate a basic configuration
     [gawel]
