@@ -1,2 +1,4 @@
 [buildout]
 extends = master.cfg slave.cfg
+parts = master ${egg} slave
+
