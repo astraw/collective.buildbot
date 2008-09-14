@@ -45,8 +45,7 @@ entry_points = {"zc.buildout": [
                     "poller = collective.buildbot.poller_recipe:Pollers",
                     ],
                 "paste.paster_create_template" : [
-                    "buildbot = collective.buildbot.templates:Complex",
-                    "buildbot_simple = collective.buildbot.templates:Simple",
+                    "buildbot = collective.buildbot.templates:Buildbot",
                     ],
                 }
 

@@ -4,12 +4,13 @@ parts = master ${egg}
 [master]
 recipe = ${recipe}:master
 project-name = ${project} project
+allow-force = true
 port = ${port}
 wport = ${wport}
 slaves =
     slave ${password}
 
-[${egg}]
+[${project}]
 recipe = ${recipe}:project
 slave-names = slave
 vcs = ${vcs}
@@ -19,11 +20,15 @@ repositories = ${vcs_url}
 periodic-scheduler=60
 
 # You can change the sequences to build / test your app
+# default options should work for most buildout based projects
 #build-sequence =
 #    /usr/bin/python2.5 buildout/bootstrap.py -c buildout/project.cfg
 #    /usr/bin/python2.5 buildout/bin/buildout -c buildout/project.cfg
 
-#test-sequence =
-#    buildout/bin/test
+test-sequence =
+    buildout/bin/test
+# zope.testing require exit with status
+#    buildout/bin/test --exit-with-status
+
 
 

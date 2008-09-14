@@ -4,6 +4,7 @@ parts = master ${egg} slave
 [master]
 recipe = ${recipe}:master
 project-name = ${project} project
+allow-force = true
 port = ${port}
 wport = ${wport}
 slaves =

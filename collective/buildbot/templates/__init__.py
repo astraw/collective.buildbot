@@ -7,11 +7,11 @@ from paste.script.templates import var
 
 recipe = 'collective.buildbot'
 
-class Simple(Template):
+class Buildbot(Template):
     egg_plugins = [recipe]
-    summary = 'A simple template for %s' % recipe
     required_templates = []
-    _template_dir = 'simple'
+    summary = 'A template for %s' % recipe
+    _template_dir = 'buildbot'
     vars = [
             var(name='port',
                 description='the port to use for internal communication',
@@ -38,9 +38,4 @@ class Simple(Template):
         vars['recipe'] = recipe
         vars['password'] = ''.join([random.choice(string.ascii_letters) for i in range(8)])
         print vars
-
-class Complex(Simple):
-    summary = 'A template for %s' % recipe
-    required_templates = []
-    _template_dir = 'complex'
 
