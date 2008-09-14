@@ -5,6 +5,7 @@ Doctest runner for 'collective.buildbot'.
 __docformat__ = 'restructuredtext'
 
 from os.path import join
+import os
 import unittest
 import zc.buildout.testing
 
@@ -20,13 +21,25 @@ optionflags =  (doctest.ELLIPSIS |
 def setUp(test):
     zc.buildout.testing.buildoutSetUp(test)
 
+    os.makedirs(join(os.path.expanduser('~'), '.buildout'))
+    fd = open(join(os.path.expanduser('~'), '.buildout', 'default.cfg'), 'w')
+    fd.write('''[buildout]\noffline=true''')
+    fd.close()
+
     # Install any other recipes that should be available in the tests
+
+    zc.buildout.testing.install('Paste', test)
+    zc.buildout.testing.install('PasteDeploy', test)
+    zc.buildout.testing.install('PasteScript', test)
     zc.buildout.testing.install_develop('zc.recipe.egg', test)
     zc.buildout.testing.install_develop('virtualenv', test)
     zc.buildout.testing.install_develop('zope.interface', test)
     zc.buildout.testing.install_develop('Twisted', test)
     zc.buildout.testing.install_develop('buildbot', test)
-    zc.buildout.testing.install_develop('pyflakes', test)
+    try:
+        zc.buildout.testing.install_develop('pyflakes', test)
+    except AttributeError:
+        pass
 
     # Install the recipe in develop mode
     zc.buildout.testing.install_develop('collective.buildbot', test)
