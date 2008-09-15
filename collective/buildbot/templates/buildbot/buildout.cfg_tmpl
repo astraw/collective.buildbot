@@ -4,6 +4,6 @@ parts =
     master
     ${egg}
     ${hostname}
-# uncomment this to use the poller
+# uncomment this to enable polling
 #    poller
 

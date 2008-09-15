@@ -2,15 +2,25 @@
 master-parts =
     master
     ${egg}
-# uncomment this to use the poller
+# uncomment this to enable polling
 #    poller
 
 [master]
 recipe = ${recipe}:master
 project-name = ${project} project
+
+# allow to force build with the web interface
 allow-force = true
+
+# internal port
 port = ${port}
+
+# http port
 wport = ${wport}
+
+# buildbot url. change this if you use a virtualhost
+url = http://${hostname}:${wport}/
+
 slaves =
     ${hostname} ${password}
 
@@ -21,6 +31,7 @@ vcs = ${vcs}
 repositories = ${vcs_url}
 
 # notifications
+#mail-host = localhost
 #email-notification-sender = buildbot@${hostname}
 #email-notification-recipient =
 #    my.project@my.company.com

@@ -43,8 +43,12 @@ class Buildbot(Template):
         vars['hostname'] = socket.gethostname()
 
         url = vars.get('vcs_url')
-        scheme, host = urlparse.urlparse(url)[0:2]
-        vars['vcs_root'] = '%s://%s' % (scheme, host)
+        if vars.get('vcs') == 'svn':
+            # use the root
+            scheme, host = urlparse.urlparse(url)[0:2]
+            vars['vcs_root'] = '%s://%s' % (scheme, host)
+        else:
+            vars['vcs_root'] = url
 
     def post(self, *args, **kwargs):
         print "Now have a look at master.cfg to finalize your configuration"
