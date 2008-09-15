@@ -38,6 +38,7 @@ class Buildbot(Template):
 
     def pre(self, command, output_dir, vars):
         vars['recipe'] = recipe
+        vars['directory'] = '${buildout:directory}'
         vars['password'] = ''.join([random.choice(string.ascii_letters) for i in range(8)])
 
         vars['hostname'] = socket.gethostname()

@@ -21,6 +21,9 @@ wport = ${wport}
 # buildbot url. change this if you use a virtualhost
 url = http://${hostname}:${wport}/
 
+# static files
+public-html = ${directory}/public_html
+
 slaves =
     ${hostname} ${password}
 
