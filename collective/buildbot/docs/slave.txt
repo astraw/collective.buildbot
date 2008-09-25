@@ -37,6 +37,9 @@ The recipe supports the following options:
     Can define the name of a section, containing environment variable
     that will be defined in the slave environment.
 
+``umask``
+    Override the default 0077 umask which is used in the build directory.
+
 Example usage
 =============
 
@@ -54,6 +57,7 @@ We'll start by creating a buildout that uses the recipe::
     ... port = 8888
     ... password = password
     ... environment = slaveenv
+    ... umask = 0002
     ...
     ... [slaveenv]
     ... PATH = /bin:/usr/bin:/usr/local/bin:/usr/local/firefox

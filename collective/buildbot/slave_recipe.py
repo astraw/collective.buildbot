@@ -24,6 +24,7 @@ class Recipe(BaseRecipe):
                      for key, value in self.options.items()])
         data['base_dir'] = location
         data['slave_name'] = self.name
+        data['umask'] = self.options.get('umask', 'None')
 
         template = open(join(self.recipe_dir, 'slave.tac_tmpl')).read()
         template = template % data

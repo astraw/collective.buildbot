@@ -9,7 +9,7 @@ slavename = '%(slave_name)s'
 passwd = '%(password)s'
 keepalive = 600
 usepty = 1
-umask = None
+umask = %(umask)s
 
 application = service.Application('buildslave')
 s = BuildSlave(buildmaster_host, port, slavename, passwd, basedir,

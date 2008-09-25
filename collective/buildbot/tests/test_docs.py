@@ -71,7 +71,7 @@ def test_suite():
                         zc.buildout.testing.normalize_path,
                         ]),
                 )
-            for filename in test_files])
+            for filename in test_files if os.path.isfile(join('..', 'docs', filename))])
 
     # doc test suite
     suite.addTest(doctest.DocTestSuite(collective.buildbot.poller))
