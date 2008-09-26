@@ -1,6 +1,14 @@
-SVN Unreleased
-==============
+0.3.3 (2008-09-26)
+==================
 
+  - Apply patch from Chris Shenton to override default umask
+    [gawel]
+
+  - Improve default template configuration
+    [gawel]
+
+  - Add clean css to template
+    [gawel]
 
 0.3.2 (2008-09-14)
 ==================
