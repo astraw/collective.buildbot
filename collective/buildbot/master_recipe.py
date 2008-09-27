@@ -85,6 +85,12 @@ class Recipe(BaseRecipe):
                      ('project-url', 'http://localhost:%s/')):
             options.setdefault(k, v % options['wport'])
 
+        # assume trailing slash
+        for k in ('url', 'project-url'):
+            url = options[k]
+	    if not url.endswith('/'):
+                options[k] = url + '/'	
+
         globs = dict(buildbot=options,
                      slaves=slaves)
 

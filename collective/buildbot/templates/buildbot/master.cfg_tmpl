@@ -8,6 +8,7 @@ master-parts =
 [master]
 recipe = ${recipe}:master
 project-name = ${project} project
+project-url = http://${hostname}:${wport}/
 
 # allow to force build with the web interface
 allow-force = true
@@ -36,7 +37,7 @@ repositories = ${vcs_url}
 # notifications
 #mail-host = localhost
 #email-notification-sender = buildbot@${hostname}
-#email-notification-recipient =
+#email-notification-recipients =
 #    my.project@my.company.com
 
 # run test each hour
