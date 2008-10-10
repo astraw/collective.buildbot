@@ -1,6 +1,11 @@
 0.3.4 SVN/Unreleased
 ====================
 
+  - Fixed problem with the test suite initialization which resulted in all the
+    doctests not being run. Also fixed test regressions that had surfaced
+    undetected because of the problem.
+    [dokai]
+
 0.3.3 (2008-09-26)
 ==================
 
