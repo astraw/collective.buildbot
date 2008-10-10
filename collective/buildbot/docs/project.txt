@@ -45,7 +45,7 @@ The recipe supports the following options:
   username and password will be used to perform checkouts and updates.
   See: http://pypi.python.org/pypi/lovely.buildouthttp.
 
-  For each repository you define a separate Buildbot project
+  For each repository you define, a separate Buildbot project
   configuration will be generated that shares all the other
   options. This is useful if you have multiple similar projects within
   the same repository and can save you a lot of typing. Since
@@ -56,11 +56,12 @@ The recipe supports the following options:
 
 ``branch`` (optional)
 
-  The branch in the version control system that will be checked
-  out. For Subversion checkouts you should provide the full URL to the
-  desired branch (e.g. something that ends with ``trunk`` or
-  ``branches/foo``) and leave this option empty. For Git repositories
-  the default value is ``master``.
+  The branch in the version control system that will be checked out. For
+  Subversion checkouts you should provide the full URL to the desired branch
+  (e.g. something that ends with ``trunk`` or ``branches/foo``) and leave this
+  option empty. For Git repositories the default value is ``master``. Note
+  that for Git repositories you can use any identifier that resolves to (in
+  the git rev-parse sense) to a treeish object.
 
 ``email-notification-sender`` (optional)
 
@@ -146,13 +147,20 @@ and slaves, but here we will demonstrate only the use of the
     >>> write('buildout.cfg',
     ... """
     ... [buildout]
-    ... parts = my.package
+    ... parts = my.package other.package
     ... 
     ... [my.package]
     ... recipe = collective.buildbot:project
     ... slave-names = slave1
     ... vcs = svn
     ... repositories = http://example.com/svn/my.package/trunk
+    ... 
+    ... [other.package]
+    ... recipe = collective.buildbot:project
+    ... slave-names = slave1
+    ... vcs = git
+    ... branch = 3720f2e9b3a6a148b01843bc64fbea5af59df2af
+    ... repositories = git://github.com/dokai/other.package.git
     ... """)
 
 Running the buildout gives us::
@@ -160,8 +168,10 @@ Running the buildout gives us::
     >>> print system(buildout)
     Installing my.package.
     Generated config '/sample-buildout/parts/projects/my.package.cfg'.
+    Installing other.package.
+    Generated config '/sample-buildout/parts/projects/other.package.cfg'.
 
-As we can see, the recipe generated the project configuration file
+As we can see, the recipe generated the project configuration files
 under the ``projects`` directory in the parts::
 
     >>> cat(join('parts', 'projects', 'my.package.cfg'))
@@ -173,6 +183,18 @@ under the ``projects`` directory in the parts::
     slave-names = slave1
     ...
     vcs = svn
+    <BLANKLINE>
+
+    >>> cat(join('parts', 'projects', 'other.package.cfg'))
+    [project]
+    ...
+    name = other.package
+    repository = git://github.com/dokai/other.package.git
+    ...
+    slave-names = slave1
+    ...
+    vcs = git
+    branch = 3720f2e9b3a6a148b01843bc64fbea5af59df2af
     <BLANKLINE>
 
 If you have multiple similar projects you can define them within a
@@ -202,6 +224,7 @@ When we run the buildout we can see that it generated a separate
 configuration file for each project representing a single repository::
 
     >>> print system(buildout)
+    Uninstalling other.package.
     Uninstalling my.package.
     Installing my_project.
     Generated config '/sample-buildout/parts/projects/my.package.cfg'.
