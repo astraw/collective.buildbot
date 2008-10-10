@@ -17,6 +17,8 @@ import collective.buildbot.project_recipe
 optionflags =  (doctest.ELLIPSIS |
                 doctest.NORMALIZE_WHITESPACE |
                 doctest.REPORT_ONLY_FIRST_FAILURE)
+                
+DOCTEST_DIR = os.path.normpath(join(os.path.dirname(__file__), '..', 'docs'))
 
 def setUp(test):
     zc.buildout.testing.buildoutSetUp(test)
@@ -36,10 +38,24 @@ def setUp(test):
     zc.buildout.testing.install_develop('zope.interface', test)
     zc.buildout.testing.install_develop('Twisted', test)
     zc.buildout.testing.install_develop('buildbot', test)
+
     try:
         zc.buildout.testing.install_develop('pyflakes', test)
     except AttributeError:
-        pass
+        # The pyflakes PyPI page links to a broken download which means that we can't
+        # make it a dependency of collective.buildbot. Therefore, in case the user
+        # doesn't have it installed we'll simply fake it since the tests won't
+        # actually try to run it, but the buildout depends on its existence.
+        develop_eggs = join(os.getcwd(), 'develop-eggs')
+        if os.path.isdir(develop_eggs):
+            # Get rid of the .egg-link that got created.
+            if os.path.exists(join(develop_eggs, 'pyflakes.egg-link')):
+                os.unlink(join(develop_eggs, 'pyflakes.egg-link'))
+            
+            # Create a fake egg
+            fake = open(join(develop_eggs, 'pyflakes.egg-info'), 'w')
+            fake.write('Metadata-Version: 1.0\nName: pyflakes\nVersion: 0.0\n')
+            fake.close()
 
     # Install the recipe in develop mode
     zc.buildout.testing.install_develop('collective.buildbot', test)
@@ -55,12 +71,14 @@ def test_suite():
                   'fullexample.txt',
                   'svnauth.txt'
                  ]
+
     suite = unittest.TestSuite([
             doctest.DocFileSuite(
-                join('..', 'docs', filename),
+                join(DOCTEST_DIR, filename),
                 setUp=setUp,
                 tearDown=zc.buildout.testing.buildoutTearDown,
                 optionflags=optionflags,
+                module_relative=False,
                 checker=renormalizing.RENormalizing([
                         # If want to clean up the doctest output you
                         # can register additional regexp normalizers
@@ -71,7 +89,7 @@ def test_suite():
                         zc.buildout.testing.normalize_path,
                         ]),
                 )
-            for filename in test_files if os.path.isfile(join('..', 'docs', filename))])
+            for filename in test_files if os.path.isfile(join(DOCTEST_DIR, filename))])
 
     # doc test suite
     suite.addTest(doctest.DocTestSuite(collective.buildbot.poller))
