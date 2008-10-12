@@ -1,5 +1,6 @@
 #XXX Monkey patch buildbot ... waiting for patch to be commited in buildbot
 import os
+import time
 import types
 from twisted.python import log, runtime
 from buildbot.slave.commands import ShellCommandPP
@@ -107,6 +108,7 @@ def _startCommand(self):
     # called right after we return, but somehow before connectionMade
     # were called, then kill() would blow up).
     self.process = None
+    self.startTime = time.time()
     p = reactor.spawnProcess(self.pp, argv[0], argv,
                              self.environ,
                              self.workdir,
