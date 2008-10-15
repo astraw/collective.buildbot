@@ -5,6 +5,77 @@ import types
 from twisted.python import log, runtime
 from buildbot.slave.commands import ShellCommandPP
 from twisted.internet import reactor
+from twisted.python import log
+
+import pkg_resources
+
+def ShellCommand_describe(self, done=False):
+    """Return a list of short strings to describe this step, for the
+    status display. This uses the first few words of the shell command.
+    You can replace this by setting .description in your subclass, or by
+    overriding this method to describe the step better.
+
+    @type  done: boolean
+    @param done: whether the command is complete or not, to improve the
+                 way the command is described. C{done=False} is used
+                 while the command is still running, so a single
+                 imperfect-tense verb is appropriate ('compiling',
+                 'testing', ...) C{done=True} is used when the command
+                 has finished, and the default getText() method adds some
+                 text, so a simple noun is appropriate ('compile',
+                 'tests' ...)
+    """
+
+    if done and self.descriptionDone is not None:
+        return list(self.descriptionDone)
+    if self.description is not None:
+        return list(self.description)
+
+    properties = self.build.getProperties()
+    words = self.command
+    if isinstance(words, (str, unicode)):
+        words = words.split()
+    # render() each word to handle WithProperties objects
+    words = properties.render(words)
+    if len(words) < 1:
+        return ["???"]
+    if len(words) == 1:
+        return ["'%s'" % words[0]]
+    if len(words) == 2:
+        return ["'%s" % words[0], "%s'" % words[1]]
+    return ["'%s" % words[0], "%s" % words[1], "...'"]
+
+from buildbot.steps.shell import WarningCountingShellCommand
+def Test_describe(self, done=False):
+    description = WarningCountingShellCommand.describe(self, done)
+    if done:
+        if self.step_status.hasStatistic('tests-total'):
+            total = self.step_status.getStatistic("tests-total", 0)
+            failed = self.step_status.getStatistic("tests-failed", 0)
+            passed = self.step_status.getStatistic("tests-passed", 0)
+            warnings = self.step_status.getStatistic("tests-warnings", 0)
+            if not total:
+                total = failed + passed + warnings
+
+            if total:
+                description.append('%d tests' % total)
+            if passed:
+                description.append('%d passed' % passed)
+            if warnings:
+                description.append('%d warnings' % warnings)
+            if failed:
+                description.append('%d failed' % failed)
+    return description
+
+if pkg_resources.get_distribution('buildbot').version == '0.7.9':
+    # Monkey patch a fix for http://buildbot.net/trac/ticket/347 which is a bug in
+    # 0.7.9. Once 0.7.10 is released these monkey patches should be removed.
+    from buildbot.steps import shell
+    shell.ShellCommand.describe = ShellCommand_describe
+    shell.Test.describe = Test_describe
+    log.msg('Monkey patched buildbot.steps.shell.ShellCommand.describe')
+    log.msg('Monkey patched buildbot.steps.shell.Test.describe')
+    del shell
 
 def _startCommand(self):
     # ensure workdir exists
