@@ -9,8 +9,10 @@ class Registry(object):
         self.klass = dict()
         self.called = list()
         self.running = list()
+        self.order = []
 
     def add(self, name, item):
+        self.order.append(name)
         self.klass[name] = item
 
     def run(self, name, *args, **kwargs):
@@ -33,12 +35,13 @@ class Registry(object):
         return self.klass[name]
 
     def everyone(self, *args, **kwargs):
-        """Call everyone.
+        """Call everyone, in ``add`` order.
         """
-        for name in self.klass.keys():
+        order = [m for i, m in enumerate(self.order) if m not in self.order[:i]]
+        for name in order:
             self.run(name, *args, **kwargs)
 
-        
+
 
 def split_option(options, key, splitter='\n'):
     value = options.get(key, '')
