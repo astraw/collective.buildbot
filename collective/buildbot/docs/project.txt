@@ -118,6 +118,28 @@ The recipe supports the following options:
   one. After a successful build of the given project, this one will be
   triggered.
 
+``dependencies`` (optional)
+
+  A sequence of newline-separated paths that when found on a change
+  set should cause a build to be triggered on this slave. 
+
+  For example, if you would like to cause your build to be run
+  whenever a change to a project you depend on named
+  ``some.other-project`` happens, you would use::
+
+    dependencies = some.other-project/trunk
+
+  The paths you list here are checked using substring matching. So for
+  example, if you don't care which branch of ``some.other-project``
+  has changed, you could use::
+
+    dependencies = some.other-project
+
+  Or, alternatively, if you only care if a single file inside that
+  project is changed, you could use a more specific path as well::
+
+    dependencies = some.other-project/trunk/versions.cfg
+
 ``pyflakes`` (optional)
 
   A sequence of newline separated PyFlakes_ commands to run. If
@@ -161,6 +183,7 @@ and slaves, but here we will demonstrate only the use of the
     ... vcs = git
     ... branch = 3720f2e9b3a6a148b01843bc64fbea5af59df2af
     ... repositories = git://github.com/dokai/other.package.git
+    ... dependencies = my.package/trunk
     ... """)
 
 Running the buildout gives us::
@@ -194,6 +217,7 @@ under the ``projects`` directory in the parts::
     slave-names = slave1
     ...
     vcs = git
+    dependencies = my.package/trunk
     branch = 3720f2e9b3a6a148b01843bc64fbea5af59df2af
     <BLANKLINE>
 

@@ -13,6 +13,18 @@ from collective.buildbot.utils import split_option
 
 s = factory.s
 
+class FileChecker:
+
+    def __init__(self, frags):
+        self.frags = frags
+
+    def __call__(self, change):
+        for f in change.files:
+            for frag in self.frags:
+                if frag in f:
+                    return True
+        return False
+
 class Project(object):
     """A builbot project::
 
@@ -64,6 +76,7 @@ class Project(object):
         if not self.test_sequence:
             self.test_sequence = [join('bin', 'test')]
 
+        self.dependencies = split_option(options, 'dependencies')
         self.repository = options.get('repository', '')
         self.branch = options.get('branch', '')
         self.options = options
@@ -182,6 +195,17 @@ class Project(object):
             except ValueError:
                 log.msg('Dependency loop detected')
                 raise
+        
+        # Set up a general scheduler for any changes to dependencies
+        dependencies = self.dependencies
+        if dependencies:
+            name = 'Dependency scheduler watching %s for %s' % (
+                ', '.join(map(repr, dependencies)), self.name)
+            self.schedulers.append(
+                Scheduler(name=name, branch=None,
+                          builderNames=self.builders(),
+                          fileIsImportant=FileChecker(tuple(dependencies)),
+                          ))
 
         log.msg('Adding schedulers for %s: %s' % (self.name, self.schedulers))
 
