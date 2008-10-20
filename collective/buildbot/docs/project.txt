@@ -63,6 +63,16 @@ The recipe supports the following options:
   that for Git repositories you can use any identifier that resolves to (in
   the git rev-parse sense) to a treeish object.
 
+``always-use-latest`` (optional, defaults to ``False``)
+
+  Whether to always update to the most recent available sources for
+  this build. Please refer to the 'alwaysUseLatest' option of
+  ``buildbot.steps.source.Source`` for more info.
+
+  Basically, if your buildbot is watching changes from multiple
+  repositories it is very likely that you will need to set this option
+  to ``True``.
+
 ``email-notification-sender`` (optional)
 
   An email address that will be used in the From: header for the
@@ -121,7 +131,7 @@ The recipe supports the following options:
 ``dependencies`` (optional)
 
   A sequence of newline-separated paths that when found on a change
-  set should cause a build to be triggered on this slave. 
+  set should cause a build to be triggered on this slave.
 
   For example, if you would like to cause your build to be run
   whenever a change to a project you depend on named
@@ -156,7 +166,7 @@ The recipe supports the following options:
   You can also have your slave buildout install pyflakes and use that
   instead of a globally installed version.
 
-  .. _PyFlakes: http://divmod.org/trac/wiki/DivmodPyflakes   
+  .. _PyFlakes: http://divmod.org/trac/wiki/DivmodPyflakes
 
 Example usage
 =============
@@ -170,13 +180,14 @@ and slaves, but here we will demonstrate only the use of the
     ... """
     ... [buildout]
     ... parts = my.package other.package
-    ... 
+    ...
     ... [my.package]
     ... recipe = collective.buildbot:project
     ... slave-names = slave1
     ... vcs = svn
     ... repositories = http://example.com/svn/my.package/trunk
-    ... 
+    ... always-use-latest = yes
+    ...
     ... [other.package]
     ... recipe = collective.buildbot:project
     ... slave-names = slave1
@@ -206,6 +217,7 @@ under the ``projects`` directory in the parts::
     slave-names = slave1
     ...
     vcs = svn
+    always-use-latest = yes
     <BLANKLINE>
 
     >>> cat(join('parts', 'projects', 'other.package.cfg'))
@@ -232,7 +244,7 @@ in the buildout section.
     ... [buildout]
     ... parts = my_project
     ... svn = http://svn.example.com/svnroot
-    ... 
+    ...
     ... [my_project]
     ... recipe = collective.buildbot:project
     ... slave-names = slave1
@@ -263,5 +275,3 @@ The projects recipe
 The ``collective.buildbot:projects`` recipe is deprecated and not
 supported anymore. Simply supply multiple repositories for the
 ``collective.buildbot:project`` recipe to achieve the same result.
-
-  

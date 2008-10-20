@@ -69,6 +69,8 @@ class Project(object):
         
         self.slave_names =  options.get('slave_names', '').split()
         self.vcs = options.get('vcs', 'svn')
+        self.always_use_latest = (options.get('always_use_latest', '').lower() in 
+                                  ('yes', 'true', 'y') or False)
 
         self.build_sequence = split_option(options, 'build_sequence')
 
@@ -217,19 +219,27 @@ class Project(object):
 
         if self.vcs == 'svn':
             if self.username is not None and self.password is not None:
-                update_sequence = [s(steps.source.SVN, mode="update", svnurl=self.repository,
-                                     username=self.username, password=self.password)]
+                update_sequence = [s(steps.source.SVN, mode="update", 
+                                     svnurl=self.repository,
+                                     username=self.username, 
+                                     password=self.password,
+                                     alwaysUseLatest=self.always_use_latest)]
             else:
-                update_sequence = [s(steps.source.SVN, mode="update", svnurl=self.repository)]
+                update_sequence = [s(steps.source.SVN, mode="update", 
+                                     svnurl=self.repository,
+                                     alwaysUseLatest=self.always_use_latest)]
         elif self.vcs in  ('hg', 'bzr'):
             if self.vcs == 'hg':
                 klass = steps.source.Mercurial
             else:
                 klass = steps.source.Bzr
-            update_sequence = [s(klass, mode="update", repourl=self.repository)]
+            update_sequence = [s(klass, mode="update", repourl=self.repository,
+                                 alwaysUseLatest=self.always_use_latest)]
         elif self.vcs == 'git':
             update_sequence = [s(steps.source.Git, mode='update',
-                                 repourl=self.repository, branch=self.branch)]
+                                 repourl=self.repository, 
+                                 branch=self.branch,
+                                 alwaysUseLatest=self.always_use_latest)]
         else:
             raise NotImplementedError('%s not supported yet' % self.vcs)
 
