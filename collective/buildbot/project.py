@@ -2,7 +2,7 @@ import os
 from os.path import join
 
 from collective.buildbot.scheduler import SVNScheduler
-from buildbot.scheduler import Nightly, Periodic, Dependent
+from buildbot.scheduler import Nightly, Periodic, Dependent, Scheduler
 from buildbot.process import factory
 from buildbot import steps
 from buildbot.steps.python import PyFlakes
@@ -204,6 +204,7 @@ class Project(object):
             self.schedulers.append(
                 Scheduler(name=name, branch=None,
                           builderNames=self.builders(),
+                          treeStableTimer=60,
                           fileIsImportant=FileChecker(tuple(dependencies)),
                           ))
 
