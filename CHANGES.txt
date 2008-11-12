@@ -1,6 +1,13 @@
 0.3.4 SVN/Unreleased
 ====================
 
+  - Make Source Checkout mode configurable through ``vcs-mode``.
+    [sidnei]
+
+  - Make ``build`` steps set ``haltOnFailure=True``. No point in doing
+    any testing if the build steps failed.
+    [sidnei]
+
   - Fixed compatibility problem with buildbot 0.7.9
     [dokai]
 

@@ -69,6 +69,7 @@ class Project(object):
         
         self.slave_names =  options.get('slave_names', '').split()
         self.vcs = options.get('vcs', 'svn')
+        self.vcs_mode = options.get('vcs_mode', 'update')
         self.always_use_latest = (options.get('always_use_latest', '').lower() in 
                                   ('yes', 'true', 'y') or False)
 
@@ -125,7 +126,8 @@ class Project(object):
                         mode='failing',
                         sendToInterestedUsers=True))
             except AssertionError:
-                log.msg('Error adding MailNotifier for project %s: from: %s, to: %s' % (
+                log.msg('Error adding MailNotifier for project %s: '
+                        'from: %s, to: %s' % (
                         self.name, self.email_notification_sender,
                         self.email_notification_recipients))
 
@@ -165,7 +167,8 @@ class Project(object):
                     raise ValueError
 
                 name = 'Periodic scheduler for %s' % self.name
-                self.schedulers.append(Periodic(name, self.builders(), period * 60))
+                self.schedulers.append(
+                    Periodic(name, self.builders(), period * 60))
             except (TypeError, ValueError):
                 log.msg('Invalid period for periodic scheduler: %s' % period)
                 raise
@@ -174,13 +177,15 @@ class Project(object):
         cron = self.options.get('cron_scheduler', None)
         if cron is not None:
             try:
-                minute, hour, dom, month, dow = [v=='*' and v or int(v) for v in cron.split()[:5]]
+                minute, hour, dom, month, dow = [v=='*' and v or int(v) 
+                                                 for v in cron.split()[:5]]
                 name = 'Cron scheduler for %s at %s' % (self.name, cron)
                 self.schedulers.append(Nightly(
                         name, self.builders(), minute, hour, dom, month, dow))
 
             except (IndexError, ValueError, TypeError):
-                log.msg('Invalid cron definition for the cron scheduler: %s' % cron)
+                log.msg('Invalid cron definition for the cron '
+                        'scheduler: %s' % cron)
                 raise
 
         # Set up a dependent scheduler
@@ -188,9 +193,10 @@ class Project(object):
         if dependent is not None:
             try:
                 for parent in registry.runned(dependent, c, registry).schedulers:
-                    name = 'Dependent scheduler between scheduler <%s> and project %s' % \
-                        (parent.name, self.name)
-                    self.schedulers.append(Dependent(name, parent, self.builders()))
+                    name = ('Dependent scheduler between scheduler <%s> '
+                            'and project %s' % (parent.name, self.name))
+                    self.schedulers.append(
+                        Dependent(name, parent, self.builders()))
             except KeyError:
                 log.msg('Invalid project %s selected as dependency' % dependent)
                 raise
@@ -219,13 +225,13 @@ class Project(object):
 
         if self.vcs == 'svn':
             if self.username is not None and self.password is not None:
-                update_sequence = [s(steps.source.SVN, mode="update", 
+                update_sequence = [s(steps.source.SVN, mode=self.vcs_mode, 
                                      svnurl=self.repository,
                                      username=self.username, 
                                      password=self.password,
                                      alwaysUseLatest=self.always_use_latest)]
             else:
-                update_sequence = [s(steps.source.SVN, mode="update", 
+                update_sequence = [s(steps.source.SVN, mode=self.vcs_mode, 
                                      svnurl=self.repository,
                                      alwaysUseLatest=self.always_use_latest)]
         elif self.vcs in  ('hg', 'bzr'):
@@ -233,10 +239,11 @@ class Project(object):
                 klass = steps.source.Mercurial
             else:
                 klass = steps.source.Bzr
-            update_sequence = [s(klass, mode="update", repourl=self.repository,
+            update_sequence = [s(klass, mode=self.vcs_mode, 
+                                 repourl=self.repository,
                                  alwaysUseLatest=self.always_use_latest)]
         elif self.vcs == 'git':
-            update_sequence = [s(steps.source.Git, mode='update',
+            update_sequence = [s(steps.source.Git, mode=self.vcs_mode,
                                  repourl=self.repository, 
                                  branch=self.branch,
                                  alwaysUseLatest=self.always_use_latest)]
@@ -249,7 +256,9 @@ class Project(object):
                 cmd[0] = self.executable()
             return cmd
 
-        build_sequence = [s(steps.shell.ShellCommand, command=_cmd(cmd))
+        build_sequence = [s(steps.shell.ShellCommand, 
+                            command=_cmd(cmd),
+                            haltOnFailure=True)
                           for cmd in self.build_sequence
                           if cmd.strip() != '']
 
@@ -264,7 +273,8 @@ class Project(object):
                 if len(pyf.strip()) > 0:
                     pyflakes_sequence.append(s(PyFlakes, command=pyf.split()))
 
-        sequence = update_sequence + build_sequence + test_sequence + pyflakes_sequence
+        sequence = (update_sequence + build_sequence + 
+                    test_sequence + pyflakes_sequence)
 
         for slave_name in self.slave_names:
             log.msg('Adding slave %s to %s project' % (slave_name, self.name))

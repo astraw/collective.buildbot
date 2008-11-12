@@ -32,6 +32,14 @@ The recipe supports the following options:
   project. Defaults to ``svn``. Other possible values are: ``hg``,
   ``bzr`` and ``git``.
 
+``vcs-mode`` (optional)
+
+  The mode used to fetch the source code from the version control
+  system. Defaults to ``update``. Other possible values are:
+  ``clobber``, ``copy`` and ``export``. See the buildbot manual
+  section for ``Source Checkout`` for a description of what each
+  option does.
+
 ``repositories`` (mandatory)
 
   A sequence of newline separated URLs to the code repositories that
@@ -185,6 +193,7 @@ and slaves, but here we will demonstrate only the use of the
     ... recipe = collective.buildbot:project
     ... slave-names = slave1
     ... vcs = svn
+    ... vcs-mode = clobber
     ... repositories = http://example.com/svn/my.package/trunk
     ... always-use-latest = yes
     ...
@@ -217,6 +226,7 @@ under the ``projects`` directory in the parts::
     slave-names = slave1
     ...
     vcs = svn
+    vcs-mode = clobber
     always-use-latest = yes
     <BLANKLINE>
 
