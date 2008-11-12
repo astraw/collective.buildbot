@@ -30,6 +30,7 @@ class Project(BaseRecipe):
         globs.pop('recipe', '')
 
         for k, v in (('vcs', 'svn'),
+                     ('vcs-mode', 'update'),
                      ('mail-host', 'localhost'),
                      ('repository', ''),
                      ('email-notification-sender', ''),

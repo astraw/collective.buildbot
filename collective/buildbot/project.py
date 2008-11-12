@@ -70,6 +70,7 @@ class Project(object):
         self.slave_names =  options.get('slave_names', '').split()
         self.vcs = options.get('vcs', 'svn')
         self.vcs_mode = options.get('vcs_mode', 'update')
+        self.vcs_retry = (10, 3)
         self.always_use_latest = (options.get('always_use_latest', '').lower() in 
                                   ('yes', 'true', 'y') or False)
 
@@ -226,12 +227,14 @@ class Project(object):
         if self.vcs == 'svn':
             if self.username is not None and self.password is not None:
                 update_sequence = [s(steps.source.SVN, mode=self.vcs_mode, 
+                                     retry=self.vcs_retry,
                                      svnurl=self.repository,
                                      username=self.username, 
                                      password=self.password,
                                      alwaysUseLatest=self.always_use_latest)]
             else:
                 update_sequence = [s(steps.source.SVN, mode=self.vcs_mode, 
+                                     retry=self.vcs_retry,
                                      svnurl=self.repository,
                                      alwaysUseLatest=self.always_use_latest)]
         elif self.vcs in  ('hg', 'bzr'):
@@ -240,10 +243,12 @@ class Project(object):
             else:
                 klass = steps.source.Bzr
             update_sequence = [s(klass, mode=self.vcs_mode, 
+                                 retry=self.vcs_retry,
                                  repourl=self.repository,
                                  alwaysUseLatest=self.always_use_latest)]
         elif self.vcs == 'git':
             update_sequence = [s(steps.source.Git, mode=self.vcs_mode,
+                                 retry=self.vcs_retry,
                                  repourl=self.repository, 
                                  branch=self.branch,
                                  alwaysUseLatest=self.always_use_latest)]
