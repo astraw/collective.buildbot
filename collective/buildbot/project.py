@@ -71,8 +71,9 @@ class Project(object):
         self.vcs = options.get('vcs', 'svn')
         self.vcs_mode = options.get('vcs_mode', 'update')
         self.vcs_retry = (10, 3)
-        self.always_use_latest = (options.get('always_use_latest', '').lower() in 
-                                  ('yes', 'true', 'y') or False)
+        self.always_use_latest = (
+            options.get('always_use_latest', '').strip().lower() in 
+            ('yes', 'true', 'y') or False)
 
         self.build_sequence = split_option(options, 'build_sequence')
 

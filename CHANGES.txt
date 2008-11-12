@@ -1,6 +1,9 @@
 0.3.4 SVN/Unreleased
 ====================
 
+  - Strip always_use_latest option to avoid issues with whitespace.
+    [sidnei]
+
   - Make Source Checkout retry up to 3 times, 10 seconds
     apart. Somehow later versions of buildbot seem to fail much more
     often when removing the checkout directory, and hopefully this
