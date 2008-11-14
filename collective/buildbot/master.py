@@ -48,7 +48,8 @@ else:
 
 c['slaves'] = [BuildSlave(name, password, max_builds=max_builds,
                           notify_on_missing=[],
-                          missing_timeout=3600) for name, password in config.items('slaves')]
+                          missing_timeout=3600) 
+               for name, password in config.items('slaves')]
 
 for name, klass in (('project', Project), ('poller', Poller)):
     registry = Registry()

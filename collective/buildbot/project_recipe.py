@@ -20,7 +20,8 @@ class Project(BaseRecipe):
 
         # default values in buildout section
         valid_args = ('mail-host', 'email-notification-sender',
-                      'email-notification-recipient',)
+                      'email-notification-recipient', 'vcs-mode',
+                      'build-timeout', 'test-timeout', 'timeout')
         for key, value in self.buildout['buildout'].items():
             if key in valid_args:
                 globs[key] = value
@@ -31,6 +32,9 @@ class Project(BaseRecipe):
 
         for k, v in (('vcs', 'svn'),
                      ('vcs-mode', 'update'),
+                     ('timeout', '3600'),
+                     ('build-timeout', '3600'),
+                     ('test-timeout', '3600'),
                      ('mail-host', 'localhost'),
                      ('repository', ''),
                      ('email-notification-sender', ''),

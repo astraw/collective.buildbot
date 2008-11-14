@@ -75,6 +75,11 @@ class Project(object):
             options.get('always_use_latest', '').strip().lower() in 
             ('yes', 'true', 'y') or False)
 
+        d_timeout = options.get('timeout', '3600').strip()
+        self.timeout = int(d_timeout)
+        self.build_timeout = int(options.get('build_timeout', d_timeout).strip())
+        self.test_timeout = int(options.get('test_timeout', d_timeout).strip())
+
         self.build_sequence = split_option(options, 'build_sequence')
 
         self.test_sequence = split_option(options, 'test_sequence')
@@ -264,11 +269,14 @@ class Project(object):
 
         build_sequence = [s(steps.shell.ShellCommand, 
                             command=_cmd(cmd),
-                            haltOnFailure=True)
+                            haltOnFailure=True,
+                            timeout=self.build_timeout)
                           for cmd in self.build_sequence
                           if cmd.strip() != '']
 
-        test_sequence = [s(steps.shell.Test, command=_cmd(cmd))
+        test_sequence = [s(steps.shell.Test, 
+                           command=_cmd(cmd),
+                           timeout=self.test_timeout)
                          for cmd in self.test_sequence
                          if cmd.strip() != '']
 

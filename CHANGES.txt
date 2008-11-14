@@ -1,5 +1,9 @@
 0.3.4 SVN/Unreleased
 ====================
+ 
+  - Make timeout configurable, globally and independently for build
+    and test steps.
+    [sidnei]
 
   - Strip always_use_latest option to avoid issues with whitespace.
     [sidnei]
