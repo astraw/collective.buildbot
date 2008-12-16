@@ -26,8 +26,15 @@ The recipe supports the following options:
 
   A regexp used to parse paths analyzed by the poller. The regexp must return 2
   groups. The only important one is the project name to match in a builder
-  repository. (Default
-  ``'(?P<project>\S+\/trunk|\S+\/branches\/[^\/]+)/(?P<relative>.*)'``)
+  repository. 
+
+  Note that the regexp you provide will be treated as in raw-string
+  format for you (e.g. this 
+  ``(?P<project>\S+\/foo|\S+\/bar\/[^\/]+)/(?P<relative>.*))`` becomes
+  ``r'(?P<project>\S+\/foo|\S+\/bar\/[^\/]+)/(?P<relative>.*))'``
+
+  (Default
+  ``'(?P<project>\S+\/trunk|\S+\/branches\/[^\/]+)/(?P<relative>.*)'``).
 
 ``hist-max``
 
