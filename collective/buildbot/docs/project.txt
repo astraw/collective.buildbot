@@ -226,7 +226,6 @@ under the ``projects`` directory in the parts::
     slave-names = slave1
     ...
     vcs = svn
-    timeout = 3600
     vcs-mode = clobber
     always-use-latest = yes
     <BLANKLINE>
@@ -240,10 +239,8 @@ under the ``projects`` directory in the parts::
     slave-names = slave1
     ...
     vcs = git
-    timeout = 3600
-    branch = 3720f2e9b3a6a148b01843bc64fbea5af59df2af
-    vcs-mode = update
     dependencies = my.package/trunk
+    branch = 3720f2e9b3a6a148b01843bc64fbea5af59df2af
     <BLANKLINE>
 
 If you have multiple similar projects you can define them within a
