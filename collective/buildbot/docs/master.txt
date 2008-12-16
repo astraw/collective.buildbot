@@ -130,9 +130,9 @@ reflects the options we chose in our buildout configuration::
     projects-directory = /sample-buildout/parts/projects
     project-name = The project
     pollers-directory = /sample-buildout/parts/pollers
-    url = http://example.com/buildbot/
+    url = http://example.com/buildbot
     wport = 8082
-    project-url = http://example.com/
+    project-url = http://example.com
     port = 8080
     allow-force = false
     <BLANKLINE>
