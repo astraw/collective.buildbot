@@ -37,7 +37,7 @@ repositories = ${vcs_url}
 # notifications
 #mail-host = localhost
 #email-notification-sender = buildbot@${hostname}
-#email-notification-recipients =
+#email-notification-recipient =
 #    my.project@my.company.com
 
 # run test each hour

@@ -31,10 +31,12 @@ class Project(object):
         >>> from collective.buildbot.project import Project
 
     We need to test args::
-
-        >>> project = Project(repository='https://ingeniweb.svn.sourceforge.net/svnroot/ingeniweb/collective.buildbot/trunk',
-        ...                   email_notification_sender='gael@ingeniweb.com',
-        ...                   email_notification_recipients='gael@ingeniweb.com')
+        
+        >>> config_opts = {'repository':'https://ingeniweb.svn.sourceforge.net/svnroot/ingeniweb/collective.buildbot/trunk',
+        ...                'email_notification_sender':'gael@ingeniweb.com',
+        ...                'email_notification_recipient':'gael@ingeniweb.com',
+        ...                }
+        >>> project = Project(**config_opts)
 
         >>> print project.repository
         https://ingeniweb.svn.sourceforge.net/svnroot/ingeniweb/collective.buildbot/trunk
@@ -45,19 +47,20 @@ class Project(object):
         ['gael@ingeniweb.com']
 
     We can have multiple recipients::
-
-        >>> project = Project(repository='https://ingeniweb.svn.sourceforge.net/svnroot/ingeniweb/collective.buildbot/trunk',
-        ...                   email_notification_sender='gael@ingeniweb.com',
-        ...                   email_notification_recipients='gael@ingeniweb.com buildout@ingeniweb.com')
+        
+        >>> config_opts['email_notification_recipient'] = 'gael@ingeniweb.com buildout@ingeniweb.com'
+        >>> project = Project(**config_opts)
         >>> print project.email_notification_recipients
         ['gael@ingeniweb.com', 'buildout@ingeniweb.com']
-
-        >>> project = Project(repository='https://ingeniweb.svn.sourceforge.net/svnroot/ingeniweb/collective.buildbot/trunk',
-        ...                   email_notification_sender='gael@ingeniweb.com',
-        ...                   email_notification_recipients='''gael@ingeniweb.com
-        ...                                                 buildout@ingeniweb.com''')
+        
+        >>> config_opts['email_notification_recipient'] = '''gael@ingeniweb.com
+        ...                                                  buildout@ingeniweb.com'''
+        >>> project = Project(**config_opts)
         >>> print project.email_notification_recipients
         ['gael@ingeniweb.com', 'buildout@ingeniweb.com']
+    
+    Please note that .cfg files likely contain dashes (e.g. `-`) that are transformed into
+    underscored (e.g. `_`).
     """
 
     def __init__(self, **options):
@@ -65,7 +68,7 @@ class Project(object):
 
         self.mail_host = options.get('mail_host', 'localhost')
         self.email_notification_sender = options.get('email_notification_sender','').strip()
-        self.email_notification_recipients = options.get('email_notification_recipients', '').split()
+        self.email_notification_recipients = options.get('email_notification_recipient', '').split()
         
         self.slave_names =  options.get('slave_names', '').split()
         self.vcs = options.get('vcs', 'svn')

@@ -191,7 +191,11 @@ and slaves, but here we will demonstrate only the use of the
     ...
     ... [my.package]
     ... recipe = collective.buildbot:project
+    ... email-notification-sender = email@example.com
     ... slave-names = slave1
+    ... mail-host = localhost
+    ... email-notification-recipient = 
+    ... 	email@example.com
     ... vcs = svn
     ... vcs-mode = clobber
     ... repositories = http://example.com/svn/my.package/trunk
@@ -222,8 +226,11 @@ under the ``projects`` directory in the parts::
     ...
     name = my.package
     repository = http://example.com/svn/my.package/trunk
-    ...
+    email-notification-sender = email@example.com
     slave-names = slave1
+    mail-host = localhost
+    email-notification-recipient = 
+    	email@example.com
     ...
     vcs = svn
     vcs-mode = clobber
