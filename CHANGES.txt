@@ -32,8 +32,8 @@
   - Fixed compatibility problem with buildbot 0.7.9
     [dokai]
 
-  - Fixed problem with the test suite initialization which resulted in all the
-    doctests not being run. Also fixed test regressions that had surfaced
+  - Fixed problem with the test suite initialization which resulted in all 
+    the doctests not being run. Also fixed test regressions that had surfaced
     undetected because of the problem.
     [dokai]
 
@@ -60,7 +60,8 @@
     [hannosch]
 
   - Added a mechanism to have username/password for Subversion authentication
-    Which consists of a buildbot patch and a link to .httpauth on buildout side
+    Which consists of a buildbot patch and a link to .httpauth on buildout 
+    side
     [tarek]
 
   - Add dependency between projects. The build of one project can
