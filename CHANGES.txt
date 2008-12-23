@@ -1,5 +1,14 @@
 0.3.4 SVN/Unreleased
 ====================
+
+  - Refactor of all doctests that demonstrate recipes that subclass BaseRecipe  
+    and rely upon it's write_config method. The implementation relies upon the 
+    ConfigParser module which utilizes a dictionary data structure for storage 
+    of sections and options. This can never be assumed to be ordered across 
+    Python versions and we really shouldn't care upon order in our 
+    implementation. Tests now verify existence within intended section and 
+    correct value, rather than placement.
+    [andrewb]
  
   - Completing work from r67547 (e.g. Fixed occurrences of
     `email-notification-recipients` to the singular form as used in most 

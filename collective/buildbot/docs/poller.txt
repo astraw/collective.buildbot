@@ -80,16 +80,23 @@ We can define a poller to make our buildbot aware of commits::
 
 Poller generation. You can see here all the available options::
 
-    >>> cat(join('parts', 'pollers', 'svnpoller.cfg'))
-    [poller]
-    hist-max = 100
-    repository = http://example.com/svn
-    vcs = svn
-    user = h4x0r
-    svn-binary = svn
-    password = passwd
-    poll-interval = 60
-    <BLANKLINE>
+    >>> import os
+    >>> from ConfigParser import ConfigParser
+    >>> config_path  = os.path.join('parts', 'pollers', 'svnpoller.cfg')
+    >>> config = ConfigParser()
+    >>> _ = config.read(config_path)
+    >>> res = []
+    >>> for opt, val in (('hist-max', '100'), 
+    ...     ('repository','http://example.com/svn'),
+    ...     ('vcs','svn'),
+    ...     ('user','h4x0r'),
+    ...     ('svn-binary','svn'),
+    ...     ('password','passwd'),
+    ...     ('poll-interval','60')
+    ... ):
+    ...     res.append(bool(val == config.get('poller', opt)))
+    >>> False not in res
+    True
 
 You can also have the poller to observe multiple repositories.
 
