@@ -191,7 +191,11 @@ and slaves, but here we will demonstrate only the use of the
     ...
     ... [my.package]
     ... recipe = collective.buildbot:project
+    ... email-notification-sender = email@example.com
     ... slave-names = slave1
+    ... mail-host = localhost
+    ... email-notification-recipient = 
+    ... 	email@example.com
     ... vcs = svn
     ... vcs-mode = clobber
     ... repositories = http://example.com/svn/my.package/trunk
@@ -216,35 +220,41 @@ Running the buildout gives us::
 
 As we can see, the recipe generated the project configuration files
 under the ``projects`` directory in the parts::
+    
+    >>> import os
+    >>> from ConfigParser import ConfigParser
+    >>> config_path  = os.path.join('parts', 'projects', 'my.package.cfg')
+    >>> config = ConfigParser()
+    >>> _ = config.read(config_path)
+    >>> res = []
+    >>> for opt, val in (('name', 'my.package'), 
+    ...     ('repository','http://example.com/svn/my.package/trunk'),
+    ...     ('email-notification-sender', 'email@example.com'),
+    ...     ('slave-names', 'slave1'),
+    ...     ('mail-host', 'localhost'),
+    ...     ('email-notification-recipient', '\nemail@example.com'),
+    ...     ('vcs', 'svn'),
+    ...     ('vcs-mode', 'clobber'),
+    ...     ('always-use-latest', 'yes'),
+    ... ):
+    ...     res.append(bool(val == config.get('project', opt)))
+    >>> False not in res
+    True
 
-    >>> cat(join('parts', 'projects', 'my.package.cfg'))
-    [project]
-    ...
-    name = my.package
-    repository = http://example.com/svn/my.package/trunk
-    ...
-    slave-names = slave1
-    ...
-    vcs = svn
-    timeout = 3600
-    vcs-mode = clobber
-    always-use-latest = yes
-    <BLANKLINE>
-
-    >>> cat(join('parts', 'projects', 'other.package.cfg'))
-    [project]
-    ...
-    name = other.package
-    repository = git://github.com/dokai/other.package.git
-    ...
-    slave-names = slave1
-    ...
-    vcs = git
-    timeout = 3600
-    branch = 3720f2e9b3a6a148b01843bc64fbea5af59df2af
-    vcs-mode = update
-    dependencies = my.package/trunk
-    <BLANKLINE>
+    >>> config_path  = os.path.join('parts', 'projects', 'other.package.cfg')
+    >>> config = ConfigParser()
+    >>> _ = config.read(config_path)
+    >>> res = []
+    >>> for opt, val in (('name', 'other.package'), 
+    ...     ('repository', 'git://github.com/dokai/other.package.git'),
+    ...     ('slave-names', 'slave1'),
+    ...     ('vcs', 'git'),
+    ...     ('dependencies', 'my.package/trunk'),
+    ...     ('branch', '3720f2e9b3a6a148b01843bc64fbea5af59df2af'),
+    ... ):
+    ...     res.append(bool(val == config.get('project', opt)))
+    >>> False not in res
+    True
 
 If you have multiple similar projects you can define them within a
 single buildout section by providing multiple repository URLs. All the

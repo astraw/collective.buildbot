@@ -1,5 +1,22 @@
 0.3.4 SVN/Unreleased
 ====================
+
+  - Refactor of all doctests that demonstrate recipes that subclass BaseRecipe  
+    and rely upon it's write_config method. The implementation relies upon the 
+    ConfigParser module which utilizes a dictionary data structure for storage 
+    of sections and options. This can never be assumed to be ordered across 
+    Python versions and we really shouldn't care upon order in our 
+    implementation. Tests now verify existence within intended section and 
+    correct value, rather than placement.
+    [andrewb]
+ 
+  - Completing work from r67547 (e.g. Fixed occurrences of
+    `email-notification-recipients` to the singular form as used in most 
+    places.).  When initializing collective.buildbot.project.Project we want 
+    to actually look for the singular version.  Additionally, we want our 
+    comment regarding notifications in master.cfg_tmpl to suggest the correct
+    value to be set.
+    [andrewb]
  
   - Make timeout configurable, globally and independently for build
     and test steps.
@@ -24,8 +41,8 @@
   - Fixed compatibility problem with buildbot 0.7.9
     [dokai]
 
-  - Fixed problem with the test suite initialization which resulted in all the
-    doctests not being run. Also fixed test regressions that had surfaced
+  - Fixed problem with the test suite initialization which resulted in all 
+    the doctests not being run. Also fixed test regressions that had surfaced
     undetected because of the problem.
     [dokai]
 
@@ -52,7 +69,8 @@
     [hannosch]
 
   - Added a mechanism to have username/password for Subversion authentication
-    Which consists of a buildbot patch and a link to .httpauth on buildout side
+    Which consists of a buildbot patch and a link to .httpauth on buildout 
+    side
     [tarek]
 
   - Add dependency between projects. The build of one project can
