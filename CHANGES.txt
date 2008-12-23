@@ -9,15 +9,24 @@
     implementation. Tests now verify existence within intended section and 
     correct value, rather than placement.
     [andrewb]
- 
+
   - Completing work from r67547 (e.g. Fixed occurrences of
     `email-notification-recipients` to the singular form as used in most 
     places.).  When initializing collective.buildbot.project.Project we want 
     to actually look for the singular version.  Additionally, we want our 
     comment regarding notifications in master.cfg_tmpl to suggest the correct
-    value to be set.
+    value to be set. 
+
+    NB: If you're upgrading a collective.buildbot generated buildout 
+    environment from versions earlier than 0.3.2 and you configured
+    ``email-notification-recipients`` (as opposed to 
+    ``email-notification-recipient``) in your project declarations, **please
+    update** to use ``email-notification-recipient`` per the documentation 
+    that has shipped with collective.buildbot since version 0.3.2 prior to 
+    re-running buildout and stop/start or restarting your buildmaster and
+    buildslave(s).
     [andrewb]
- 
+
   - Make timeout configurable, globally and independently for build
     and test steps.
     [sidnei]
